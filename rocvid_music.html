@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rocvid Music Studio</title>
+<style>
+:root{
+  --bg:#F4F3FA;--surface:#FFFFFF;--surface2:#ECEBF7;--ink:#12102A;--muted:#66647E;--line:#E3E1F0;
+  --accent:#5148FF;--accent-ink:#FFFFFF;--sun:#FFC83D;--danger:#D62F4B;--ok:#16895F;
+  --shadow:0 1px 2px rgba(20,16,60,.06),0 10px 30px rgba(20,16,60,.09);
+  color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0A0918;--surface:#14132B;--surface2:#1D1C3A;--ink:#F3F2FF;--muted:#A5A3C6;--line:#2A2950;
+  --accent:#8B84FF;--accent-ink:#0A0918;--danger:#FF6B84;--ok:#3ECF94;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 36px rgba(0,0,0,.45);
+  color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.45 "Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.sr{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.ab{width:18px;height:18px;vertical-align:-4px;margin-left:5px;flex:none}
+.muted{color:var(--muted);font-size:13px}
+
+.top{position:sticky;top:0;z-index:30;height:68px;display:flex;align-items:center;gap:14px;padding:0 24px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:850;font-size:25px;letter-spacing:-.05em;color:inherit;text-decoration:none}
+.logo svg{width:36px;height:36px}
+.stag{display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:#15132B;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;letter-spacing:0}
+.top .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 18px;font-weight:650;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.sun{background:var(--sun);color:#15132B;border-color:var(--sun)}
+.btn.ghost{background:none}
+.btn.sm{padding:5px 12px;font-size:13px}
+.btn.wide{width:100%;justify-content:center;margin-top:8px}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn .ic{width:20px;height:20px}
+.iconbtn{width:42px;height:42px;padding:0;justify-content:center}
+
+main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
+.ph{font-size:30px;font-weight:850;letter-spacing:-.04em;margin-bottom:6px}
+.shead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 22px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:11px 18px;font-weight:680;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.status{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);white-space:nowrap}
+.status.live,.status.approved{color:var(--ok);border-color:currentColor}
+.status.live{background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.status.submitted,.status.in_review{color:var(--accent);border-color:currentColor}
+.status.rejected{color:var(--danger);border-color:currentColor}
+.status.taken_down{text-decoration:line-through}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+.stats div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid}
+.stats b{font-size:30px;font-weight:850;letter-spacing:-.04em}
+.stats span{color:var(--muted);font-size:13px}
+.actions{display:flex;margin-bottom:16px}
+.rlist{display:grid;gap:12px}
+.rrow{display:flex;align-items:center;gap:16px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:20px;cursor:pointer}
+.rrow:hover{border-color:var(--accent)}
+.rcov{position:relative;flex:none;width:70px;height:70px;border-radius:12px;overflow:hidden;background:var(--g)}
+.rcov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rinfo{flex:1;min-width:0}
+.rinfo h3{font-size:17px;font-weight:720}
+.ch,.st{color:var(--muted);font-size:13px}
+.st{display:flex;gap:12px;flex-wrap:wrap}
+.empty{max-width:440px;margin:60px auto;text-align:center}
+.empty h2{font-size:20px;margin-bottom:6px}
+.empty p{color:var(--muted);margin-bottom:18px}
+
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:16px}
+.sec h3{display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:14px}
+.n{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font-size:13px;font-weight:800}
+.ed{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+.edmain{border:0;padding:0;min-width:0}
+.edmain:disabled{opacity:.8}
+.edtop{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.chkp{position:sticky;top:90px}
+.chkp>div{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
+.chkp h3{display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:12px}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);border-radius:99px;transition:width .3s}
+.pct{margin:6px 0 10px;font-weight:650;font-size:14px}
+.errs{list-style:none;padding:0;display:grid;gap:6px;font-size:14px;max-height:340px;overflow:auto}
+.errs li{display:flex;gap:8px;align-items:flex-start;color:var(--danger)}
+.errs .ic{width:16px;height:16px;margin-top:3px;stroke-width:2.6}
+.okmsg{display:flex;gap:8px;align-items:center;color:var(--ok);font-weight:650}
+.demo{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.log{list-style:none;padding:0;margin-top:14px;display:grid;gap:6px}
+.log li{display:flex;justify-content:space-between;align-items:center}
+
+.f{display:grid;gap:6px;font-weight:600;font-size:14px;align-content:start}
+.f input,.f select,.f textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font-weight:400}
+.f input.uc{text-transform:uppercase}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.terr{margin-top:14px}
+.terr .lbl{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
+.terr label{display:inline-flex;align-items:center;gap:6px;margin:0 8px 8px 0;border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:14px;cursor:pointer;background:var(--bg)}
+.drop{display:block;border:2px dashed var(--line);border-radius:14px;padding:20px 14px;text-align:center;cursor:pointer;background:var(--bg);font-weight:600}
+.drop.sm{padding:12px;margin-top:14px}
+.drop:hover,.drop:focus-within{border-color:var(--accent)}
+.drop small{display:block;color:var(--muted);font-weight:400;margin-top:2px}
+.covrow{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
+.covprev{position:relative;width:156px;aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--g)}
+.covprev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.covrow>div:last-child{flex:1;min-width:220px}
+.dim{display:flex;gap:6px;align-items:center;margin-top:10px;font-weight:650;font-size:14px}
+.dim.ok{color:var(--ok)}.dim.bad{color:var(--danger)}
+.dim .ic{width:17px;height:17px;stroke-width:2.6}
+.tk{border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px;background:var(--bg)}
+.tkh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.tk .f input,.tk .f select{background:var(--surface)}
+.mvbox{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:8px}
+.mvrow{display:flex;justify-content:space-between;align-items:center;gap:10px;background:var(--surface);border-radius:12px;padding:6px 6px 6px 12px}
+.mvadd{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.mvadd select{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 12px}
+.note{padding:12px 14px;border-radius:14px;margin-bottom:14px;border:1px solid var(--line);background:var(--surface)}
+.note.bad{border-color:var(--danger);color:var(--danger)}
+.err{color:var(--danger);font-weight:600;min-height:1.2em;font-size:14px}
+
+.two-col{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:22px;align-items:start}
+.chprev{display:flex;gap:14px;align-items:center;padding:14px;border-radius:16px;background:var(--bg);border:1px dashed var(--line);margin:14px 0 8px}
+.av{flex:none;width:52px;height:52px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px}
+.chprev strong{display:flex;align-items:center;gap:4px;font-size:17px}
+.alist{display:grid;gap:10px}
+.arow{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;flex-wrap:wrap}
+.arow>div{flex:1;min-width:150px}
+.arow strong{display:flex;align-items:center;font-size:16px}
+.badgebox{display:flex;gap:16px;align-items:center;padding:18px;border-radius:20px;border:1px solid color-mix(in srgb,var(--sun) 50%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--sun) 18%,var(--surface)),var(--surface));margin-bottom:14px}
+.badgebox .ab{width:56px;height:56px;margin:0}
+.badgebox p{color:var(--muted);font-size:14px}
+.cathead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cathead h3{margin:0}
+.catrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--line);flex-wrap:wrap}
+.cn{width:24px;color:var(--muted);font-weight:700}
+.ct{flex:1;min-width:140px;display:grid}
+.media{display:flex;gap:6px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:600;text-decoration:none}
+.chip .ic{width:14px;height:14px}
+.chip.dim2{color:var(--muted)}
+pre{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;overflow:auto;font-size:13px;line-height:1.55}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
+.keybox{padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--sun) 28%,transparent);border:1px solid var(--sun);margin:12px 0;overflow-wrap:anywhere}
+.flow{display:grid;gap:6px;font-size:14px}
+
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:14px;font-weight:650;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:calc(100vw - 32px)}
+#toast.on{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:1100px){.ed{grid-template-columns:1fr}.chkp{position:static}.two-col{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .top{padding:0 12px;gap:8px}
+  .logo span,.top .btn span{display:none}
+  .top .btn{padding:10px}
+  main{padding:18px 14px 64px}
+  .fgrid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="abGrad" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#FF9F43"/></linearGradient>
+</defs></svg>
+
+<header class="top">
+  <a class="logo" href="index.html" aria-label="Rocvid, ke laman utama">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="10" fill="var(--accent)"/><path d="M12 8.5l12 7.5-12 7.5z" fill="var(--accent-ink)"/><circle cx="7.2" cy="24.8" r="2.3" fill="var(--sun)"/></svg>
+    <span>rocvid</span>
+  </a>
+  <span class="stag"><svg class="ic" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Music Studio</span>
+  <span class="sp"></span>
+  <button class="btn iconbtn" id="themeBtn" aria-label="Tukar tema gelap atau cerah"></button>
+  <a class="btn" href="index.html"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Kembali ke Rocvid</span></a>
+</header>
+
+<main id="main"></main>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ================= Helper ================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const slugify = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'artis';
+const ICONS = {
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',
+  check:'<path d="M5 12l5 5 9-10"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>', plus:'<path d="M12 5v14M5 12h14"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', back:'<path d="M15 5l-7 7 7 7"/>',
+  film:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 12h18"/>',
+  play:'<path d="M8 5l11 7-11 7z" fill="currentColor" stroke="none"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
+const BADGE = (() => {
+  let lobes = '';
+  for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; lobes += `<circle cx="${(12 + 7.6 * Math.cos(a)).toFixed(2)}" cy="${(12 + 7.6 * Math.sin(a)).toFixed(2)}" r="3.5"/>`; }
+  return `<svg class="ab" viewBox="0 0 24 24" role="img" aria-label="Artis rasmi Rocvid"><title>Artis rasmi Rocvid</title>
+    <g fill="url(#abGrad)">${lobes}<circle cx="12" cy="12" r="8.4"/></g>
+    <g fill="none" stroke="#15132B" stroke-linecap="round" stroke-linejoin="round"><path d="M10.4 8.6v6.8M15.6 7.6v6.8" stroke-width="1.5"/><path d="M10.4 8.6l5.2-1" stroke-width="2.2"/></g>
+    <g fill="#15132B"><ellipse cx="8.9" cy="15.7" rx="1.9" ry="1.4" transform="rotate(-18 8.9 15.7)"/><ellipse cx="14.1" cy="14.7" rx="1.9" ry="1.4" transform="rotate(-18 14.1 14.7)"/></g></svg>`;
+})();
+const fmt = s => {
+  if (!isFinite(s) || s < 0) s = 0; s = Math.round(s);
+  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
+};
+const ago = t => {
+  const s = (Date.now() - t) / 1000;
+  if (s < 60) return 'baru sahaja';
+  if (s < 3600) return Math.floor(s / 60) + ' minit lalu';
+  if (s < 86400) return Math.floor(s / 3600) + ' jam lalu';
+  if (s < 2592000) return Math.floor(s / 86400) + ' hari lalu';
+  if (s < 31536000) return Math.floor(s / 2592000) + ' bulan lalu';
+  return Math.floor(s / 31536000) + ' tahun lalu';
+};
+const hue = seed => { let h = 0; for (const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
+const grad = seed => { const h = hue(seed); return `linear-gradient(135deg,hsl(${h} 58% 40%),hsl(${(h + 50) % 360} 62% 26%))`; };
+function makeCover(text, seed) {
+  const c = document.createElement('canvas'); c.width = c.height = 600;
+  const x = c.getContext('2d'), h = hue(seed), g = x.createLinearGradient(0, 0, 600, 600);
+  g.addColorStop(0, `hsl(${h} 72% 46%)`); g.addColorStop(1, `hsl(${(h + 60) % 360} 70% 24%)`);
+  x.fillStyle = g; x.fillRect(0, 0, 600, 600);
+  x.fillStyle = '#FFC83D'; x.beginPath(); x.arc(440, 160, 74, 0, Math.PI * 2); x.fill();
+  x.fillStyle = '#fff'; x.font = '800 58px "Avenir Next","Segoe UI",sans-serif';
+  const lines = []; let cur = '';
+  text.split(' ').forEach(w => { if (x.measureText((cur + ' ' + w).trim()).width > 480 && cur) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
+  lines.push(cur);
+  lines.slice(0, 3).forEach((l, i, a) => x.fillText(l, 52, 560 - (a.length - 1 - i) * 66));
+  return c.toDataURL('image/jpeg', .86);
+}
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 2800); }
+
+/* ================= Simpanan dikongsi dengan index.html ================= */
+const Store = (() => {
+  const KEY = 'rocvid.state.v2', mem = {}, urls = {}; let db = null, timer, pending = null;
+  const open = () => new Promise(res => {
+    try {
+      const r = indexedDB.open('rocvid', 1);
+      r.onupgradeneeded = () => { r.result.createObjectStore('kv'); r.result.createObjectStore('files'); };
+      r.onsuccess = () => res(r.result); r.onerror = r.onblocked = () => res(null);
+    } catch (e) { res(null); }
+  });
+  const req = (store, mode, fn) => new Promise(res => {
+    if (!db) return res(undefined);
+    try {
+      const t = db.transaction(store, mode), rq = fn(t.objectStore(store));
+      t.oncomplete = () => res(rq && rq.result); t.onerror = t.onabort = () => res(undefined);
+    } catch (e) { res(undefined); }
+  });
+  const write = S => { const raw = JSON.stringify(S); if (db) req('kv', 'readwrite', s => s.put(raw, KEY)); else mem[KEY] = raw; };
+  return {
+    urls,
+    async init() { db = await open(); },
+    async load() { const raw = db ? await req('kv', 'readonly', s => s.get(KEY)) : mem[KEY]; try { return raw ? JSON.parse(raw) : null; } catch (e) { return null; } },
+    save(S) { pending = S; clearTimeout(timer); timer = setTimeout(() => { write(S); pending = null; }, 120); },
+    flush() { if (pending) { clearTimeout(timer); write(pending); pending = null; } },
+    async loadFiles() {
+      if (!db) return;
+      const keys = await req('files', 'readonly', s => s.getAllKeys()), vals = await req('files', 'readonly', s => s.getAll());
+      (keys || []).forEach((k, i) => { urls[k] = URL.createObjectURL(vals[i]); });
+    },
+    putFile(blob) { const k = 'f' + uid(); urls[k] = URL.createObjectURL(blob); if (db) req('files', 'readwrite', s => s.put(blob, k)); return 'idb:' + k; }
+  };
+})();
+const U = ref => (typeof ref === 'string' && ref.startsWith('idb:')) ? (Store.urls[ref.slice(4)] || '') : (ref || '');
+
+/* ================= Data demo (sama dengan index.html) ================= */
+const D = 864e5;
+const MV_TYPES = [['official_music_video', 'Video rasmi'], ['lyric_video', 'Video lirik'], ['visualizer', 'Visualizer'], ['live_performance', 'Persembahan langsung']];
+const MV_LABEL = { official_music_video:'Video rasmi', lyric_video:'Video lirik', visualizer:'Visualizer', live_performance:'Persembahan langsung' };
+const AUD = 'https://www.w3schools.com/html/horse.mp3';
+const MV1 = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
+const MV2 = 'https://www.w3schools.com/html/mov_bbb.mp4';
+function seedMusic(S, o) {
+  const cover = makeCover(o.title, o.title), art = S.artists.find(a => a.id === o.aid), t0 = Date.now() - o.days * D, ch = 'a:' + o.aid;
+  const rid = 'r' + o.n, tid = 't' + o.n, tracks = [{ id:'ma' + o.n, relation:'audio_track' }];
+  S.videos.push({ id:'ma' + o.n, demo:true, type:'audio_track', title:o.title, desc:`Daripada keluaran "${o.title}"`, cat:'Muzik', channel:art.name, chKey:ch, src:AUD, thumb:cover, dur:6,
+    views:o.views, likes:Math.round(o.views / 14), dislikes:Math.round(o.views / 900), t:t0, privacy:'Awam', trackId:tid, releaseId:rid, comments:[] });
+  if (o.mv) {
+    S.videos.push({ id:'mv' + o.n, demo:true, type:o.mvType, title:`${o.title} (${MV_LABEL[o.mvType]})`, desc:`${MV_LABEL[o.mvType]} untuk "${o.title}".`, cat:'Muzik', channel:art.name, chKey:ch, src:o.mv,
+      views:o.views * 2, likes:Math.round(o.views / 8), dislikes:Math.round(o.views / 600), t:t0, privacy:'Awam', trackId:tid, releaseId:rid, comments:[] });
+    tracks.push({ id:'mv' + o.n, relation:o.mvType });
+  }
+  S.releases.push({ id:rid, title:o.title, version:'', type:'single', primary:[o.aid], featured:[], label:'Demo Records', genre:o.genre, language:'ms',
+    origDate:'2026-09-01', relDate:'2026-09-01', p:'2026 Demo Records', c:'2026 ' + art.name, upc:'12345678901' + o.n, territories:['WW'], explicit:'not_explicit',
+    cover:{ url:cover, w:3000, h:3000, name:'cover.jpg' }, status:'live', rejection:'', log:[{ s:'live', t:t0 }],
+    tracks:[{ id:tid, title:o.title, version:'', isrc:'MYABC26' + String(o.n).padStart(5, '0'), explicit:'not_explicit', audioUrl:AUD, audioName:'master.wav', format:'wav', rate:44100, depth:16, dur:6,
+      composer:art.name, lyricist:art.name, producer:'Demo Records', publisher:'Demo Publishing', mvType:'official_music_video', videos:tracks }] });
+}
+function seed() {
+  const S = { v:2, videos:[], artists:[], releases:[], keys:[], dist:{ id:'dist1', name:'Demo Records Sdn Bhd', status:'approved' },
+    chSubs:{ 'p:studio-bunga':12400, 'p:alam-kita':3280, 'a:a1':8120, 'a:a2':4310, 'a:a3':1960 },
+    me:{ name:'Saluran Saya', subs:[], liked:[], disliked:[], later:[], history:[], prefs:{ vol:1, muted:false, rate:1, autonext:true, theme:'' } } };
+  S.artists.push(
+    { id:'a1', name:'Nada Demo', slug:'nada-demo', country:'MY', bio:'Penyanyi pop demo untuk menunjukkan saluran artis Rocvid.', dist:'dist1' },
+    { id:'a2', name:'Laut Biru', slug:'laut-biru', country:'MY', bio:'Duo indie demo dari pantai timur.', dist:'dist1' },
+    { id:'a3', name:'Rimba Beat', slug:'rimba-beat', country:'MY', bio:'Penerbit muzik elektronik demo.', dist:'dist1' });
+  S.videos.push(
+    { id:'d1', demo:true, type:'standard', title:'Kisah Arnab Gergasi (animasi pendek)', desc:'Klip animasi percuma untuk menguji pemain Rocvid.\nMuat naik video anda sendiri untuk mula berkongsi.', cat:'Hiburan', channel:'Studio Bunga', chKey:'p:studio-bunga', src:MV2, views:18234, likes:1204, dislikes:31, t:Date.now() - 3 * D, privacy:'Awam',
+      comments:[{ who:'Aisyah', text:'Animasi ini comel betul!', t:Date.now() - 2 * D }, { who:'Farid', text:'Pemain video pun lancar.', t:Date.now() - D }] },
+    { id:'d2', demo:true, type:'standard', title:'Bunga mekar, rakaman masa berlalu', desc:'Rakaman masa berlalu (time-lapse) sekuntum bunga yang sedang mekar.', cat:'Vlog', channel:'Alam Kita', chKey:'p:alam-kita', src:MV1, views:5921, likes:402, dislikes:7, t:Date.now() - 9 * D, privacy:'Awam',
+      comments:[{ who:'Hana', text:'Cantik sungguh warna bunga ini.', t:Date.now() - 5 * D }] });
+  seedMusic(S, { n:1, aid:'a1', title:'Sinar Pagi', genre:'Pop', views:24310, days:7, mv:MV1, mvType:'official_music_video' });
+  seedMusic(S, { n:2, aid:'a2', title:'Ombak Senja', genre:'Indie', views:15840, days:4, mv:MV2, mvType:'visualizer' });
+  seedMusic(S, { n:3, aid:'a3', title:'Hutan Berirama', genre:'Elektronik', views:9120, days:2 });
+  return S;
+}
+
+/* ================= Studio ================= */
+const GENRES = ['Pop', 'Rock', 'Hip-hop/Rap', 'R&B', 'Dangdut', 'Nasyid', 'Tradisional', 'Elektronik', 'Jazz', 'Klasik', 'Indie', 'Lain-lain'];
+const LANGS = [['ms','Bahasa Melayu'],['en','English'],['id','Bahasa Indonesia'],['zh','Mandarin'],['ta','Tamil'],['ar','Arab'],['ja','Jepun'],['ko','Korea']];
+const TERRS = [['WW','Seluruh dunia'],['MY','Malaysia'],['SG','Singapura'],['ID','Indonesia'],['BN','Brunei'],['TH','Thailand'],['US','Amerika Syarikat'],['GB','United Kingdom']];
+const RTYPES = [['single','Single (1-3 lagu)'],['ep','EP (4-6 lagu)'],['album','Album (7+ lagu)'],['compilation','Kompilasi']];
+const EXPL = [['not_explicit','Tidak eksplisit'],['explicit','Eksplisit'],['clean','Versi bersih']];
+const STATUS_LABEL = { draft:'Draf', submitted:'Dihantar', in_review:'Disemak', approved:'Diluluskan', rejected:'Ditolak', live:'Live', taken_down:'Ditarik balik' };
+
+let S = null;
+const UI = { tab:'releases', editing:null };
+const save = () => Store.save(S);
+const artistById = id => S.artists.find(a => a.id === id);
+const byId = id => S.videos.find(v => v.id === id);
+const vis = v => v.privacy === 'Awam' && !v.hidden && !v.removed;
+const F = (label, html, cls = '') => `<label class="f ${cls}"><span>${label}</span>${html}</label>`;
+const opts = (list, cur) => list.map(([v, l]) => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(l)}</option>`).join('');
+const curRel = () => S.releases.find(r => r.id === UI.editing);
+const editable = r => ['draft', 'rejected'].includes(r.status);
+const setStatus = (r, s) => { r.status = s; r.log.push({ s, t:Date.now() }); save(); };
+const typeName = t => (RTYPES.find(x => x[0] === t) || [, t])[1];
+const artistNames = ids => ids.map(i => (artistById(i) || {}).name).filter(Boolean).join(', ');
+function setTheme(t) { document.documentElement.dataset.theme = t; S.me.prefs.theme = t; $('#themeBtn').innerHTML = ic(t === 'dark' ? 'sun' : 'moon'); save(); }
+
+const newTrack = () => ({ id:'t' + uid(), title:'', version:'', isrc:'', explicit:'not_explicit', audioUrl:'', audioName:'', format:'', rate:0, depth:0, dur:0,
+  composer:'', lyricist:'', producer:'', publisher:'', mvType:'official_music_video', videos:[] });
+const newRelease = () => ({ id:'r' + uid(), title:'', version:'', type:'single', primary:S.artists[0] ? [S.artists[0].id] : [], featured:[], label:S.dist.name,
+  genre:'', language:'ms', origDate:'', relDate:'', p:'', c:'', upc:'', territories:['WW'], explicit:'not_explicit', cover:null, status:'draft', rejection:'',
+  log:[{ s:'draft', t:Date.now() }], tracks:[newTrack()] });
+
+/* Peraturan yang sama dengan release_validation() dalam pangkalan data */
+function validate(rel) {
+  const E = []; let total = 0;
+  const ck = (ok, code, msg, tid = null) => { total++; if (!ok) E.push({ code, msg, tid }); };
+  const line = /^(19|20)[0-9]{2} .+/;
+  ck(!!rel.title.trim(), 'TITLE_REQUIRED', 'Tajuk release diperlukan');
+  ck(/^[0-9]{12,13}$/.test(rel.upc), 'UPC_REQUIRED', 'UPC/EAN (12-13 digit) diperlukan');
+  ck(!rel.upc || !S.releases.some(r => r.id !== rel.id && r.upc === rel.upc), 'UPC_DUPLICATE', 'UPC ini sudah digunakan oleh release lain');
+  ck(!!rel.label.trim(), 'LABEL_REQUIRED', 'Nama label diperlukan');
+  ck(!!rel.genre, 'GENRE_REQUIRED', 'Genre diperlukan');
+  ck(!!rel.language, 'LANGUAGE_REQUIRED', 'Bahasa diperlukan');
+  ck(!!rel.origDate && !!rel.relDate, 'RELEASE_DATE_REQUIRED', 'Tarikh keluaran asal dan tarikh keluaran di Rocvid diperlukan');
+  ck(!rel.origDate || !rel.relDate || rel.relDate >= rel.origDate, 'RELEASE_DATE_ORDER', 'Tarikh di Rocvid tidak boleh lebih awal daripada tarikh keluaran asal');
+  ck(line.test(rel.p), 'P_LINE_INVALID', 'P-line mesti berformat "TAHUN Pemilik", cth. 2026 Nama Label');
+  ck(line.test(rel.c), 'C_LINE_INVALID', 'C-line mesti berformat "TAHUN Pemilik", cth. 2026 Nama Pemilik');
+  const c = rel.cover;
+  ck(!!c, 'COVER_REQUIRED', 'Gambar muka depan diperlukan');
+  if (c) { ck(c.w === c.h, 'COVER_NOT_SQUARE', 'Gambar muka depan mesti segi empat sama'); ck(c.w >= 3000, 'COVER_TOO_SMALL', 'Gambar muka depan mesti sekurang-kurangnya 3000 x 3000 piksel'); }
+  ck(rel.primary.length > 0, 'PRIMARY_ARTIST_REQUIRED', 'Sekurang-kurangnya satu artis utama diperlukan');
+  ck(rel.territories.length > 0, 'TERRITORY_REQUIRED', 'Pilih sekurang-kurangnya satu wilayah');
+  const n = rel.tracks.length;
+  ck(n > 0 && !((rel.type === 'single' && n > 3) || (rel.type === 'ep' && (n < 4 || n > 6)) || (rel.type === 'album' && n < 7)),
+    'TRACK_COUNT_MISMATCH', `Jenis ${typeName(rel.type)} tidak sesuai dengan ${n} lagu`);
+  rel.tracks.forEach((t, i) => {
+    const L = `Lagu ${i + 1}`;
+    ck(!!t.title.trim(), 'TRACK_TITLE_REQUIRED', `${L}: tajuk diperlukan`, t.id);
+    ck(/^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$/.test(t.isrc), 'TRACK_ISRC_REQUIRED', `${L}: ISRC sah diperlukan (12 aksara, cth. MYABC2600001)`, t.id);
+    ck(!t.isrc || (!S.releases.some(r => r.id !== rel.id && r.tracks.some(x => x.isrc === t.isrc)) && !rel.tracks.some((x, j) => j < i && x.isrc === t.isrc)), 'TRACK_ISRC_DUPLICATE', `${L}: ISRC sudah digunakan`, t.id);
+    ck(!!t.audioUrl, 'TRACK_AUDIO_REQUIRED', `${L}: fail audio (WAV atau FLAC) diperlukan`, t.id);
+    if (t.audioUrl) {
+      ck(['wav', 'flac'].includes(t.format), 'TRACK_AUDIO_FORMAT', `${L}: format mesti WAV atau FLAC`, t.id);
+      ck(t.rate >= 44100 && t.depth >= 16, 'TRACK_AUDIO_QUALITY', `${L}: audio mesti sekurang-kurangnya 16-bit / 44.1 kHz${t.rate ? '' : ' (tidak dapat dikesan)'}`, t.id);
+      ck(t.dur > 0, 'TRACK_DURATION_REQUIRED', `${L}: tempoh tidak dapat dikesan`, t.id);
+    }
+    ck(rel.primary.length > 0, 'TRACK_PRIMARY_ARTIST_REQUIRED', `${L}: artis utama diperlukan`, t.id);
+    ck(!!(t.composer.trim() || t.lyricist.trim()), 'TRACK_SONGWRITER_REQUIRED', `${L}: komposer atau penulis lirik diperlukan`, t.id);
+  });
+  return { errors:E, total };
+}
+
+function render() {
+  if (UI.editing && curRel()) return renderEditor();
+  UI.editing = null;
+  const tabs = [['releases', 'Release'], ['artists', 'Artis'], ['catalog', 'Katalog'], ['api', 'API']];
+  $('#main').innerHTML = `<div class="shead"><div><h1 class="ph">Rocvid Music Studio</h1>
+    <p class="muted">${esc(S.dist.name)} <span class="status approved">Pengedar diluluskan</span></p></div></div>
+    <div class="tabs" role="tablist">${tabs.map(([id, l]) => `<button role="tab" aria-selected="${UI.tab === id}" data-sa="tab:${id}">${l}</button>`).join('')}</div>
+    <div id="stBody"></div>`;
+  ({ releases:tabReleases, artists:tabArtists, catalog:tabCatalog, api:tabApi }[UI.tab])();
+}
+
+function tabReleases() {
+  const L = S.releases, live = L.filter(r => r.status === 'live').length, tracks = L.reduce((n, r) => n + r.tracks.length, 0), pend = L.filter(r => ['submitted', 'in_review'].includes(r.status)).length;
+  $('#stBody').innerHTML = `<div class="stats"><div><b>${live}</b><span>Release live</span></div><div><b>${tracks}</b><span>Lagu</span></div><div><b>${S.artists.length}</b><span>Artis</span></div><div><b>${pend}</b><span>Menunggu semakan</span></div></div>
+    <div class="actions"><button class="btn primary" data-sa="newRel">${ic('plus')}<span>Release baharu</span></button></div>` +
+    (L.length ? `<div class="rlist">${L.map(r => `<article class="rrow" tabindex="0" role="button" data-sa="openRel:${r.id}">
+      <div class="rcov" style="--g:${grad(r.id)}">${r.cover ? `<img src="${U(r.cover.url)}" alt="">` : ''}</div>
+      <div class="rinfo"><h3>${esc(r.title || 'Tanpa tajuk')}${r.version ? ` (${esc(r.version)})` : ''}</h3>
+        <p class="ch">${esc(artistNames(r.primary) || 'Tiada artis')}</p>
+        <p class="st"><span>${typeName(r.type).split(' (')[0]}</span><span>${r.tracks.length} lagu</span>${r.upc ? `<span>UPC ${esc(r.upc)}</span>` : ''}</p></div>
+      <span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></article>`).join('')}</div>`
+    : '<div class="empty"><h2>Belum ada release</h2><p>Daftar artis, kemudian cipta release pertama anda.</p></div>');
+}
+
+const chPrev = name => `<div class="av" style="--g:${grad('prev' + name)}">${esc((name.trim()[0] || '?').toUpperCase())}</div>
+  <div><strong>${name.trim() ? esc(name.trim()) : '<span class="muted">Nama artis</span>'}${BADGE}</strong>
+  <span class="muted">${name.trim() ? '@' + esc(slugify(name).slice(0, 40).replace(/-+$/, '')) + ' · ' : ''}Saluran artis rasmi</span></div>`;
+
+function tabArtists() {
+  $('#stBody').innerHTML = `<div class="badgebox">${BADGE}<div><strong>Lencana Artis Rocvid</strong><p>Setiap artis yang didaftarkan mendapat saluran sendiri dengan lencana ini, dipaparkan di sebelah nama pada saluran, video dan carian.</p></div></div>
+    <div class="two-col"><section class="sec"><h3>Daftar artis</h3>
+    <div style="display:grid;gap:14px">
+    ${F('Nama artis', '<input id="aName" maxlength="80" autocomplete="off">')}
+    ${F('Negara', `<select id="aCountry">${opts([['MY','Malaysia'],['SG','Singapura'],['ID','Indonesia'],['BN','Brunei'],['TH','Thailand'],['US','Amerika Syarikat'],['GB','United Kingdom']], 'MY')}</select>`)}
+    ${F('Bio (pilihan)', '<textarea id="aBio" rows="3" maxlength="500"></textarea>')}
+    </div>
+    <div class="chprev" id="chPrev">${chPrev('')}</div>
+    <p class="err" id="aErr" role="alert"></p>
+    <button class="btn primary" data-sa="addArtist">Daftar artis</button></section>
+    <div class="alist">${S.artists.map(a => `<div class="arow"><div class="av" style="--g:${grad('a:' + a.id)}">${esc(a.name[0].toUpperCase())}</div>
+      <div><strong>${esc(a.name)}${BADGE}</strong>
+      <p class="st"><span>@${esc(a.slug)}</span><span>${S.releases.filter(r => r.primary.includes(a.id)).length} release</span></p></div>
+      <a class="btn sm" href="index.html#/channel/a:${a.id}">Buka saluran</a></div>`).join('')}</div></div>`;
+}
+
+function mediaChips(t) {
+  return t.videos.map(m => {
+    const v = byId(m.id); if (!v) return '';
+    const lab = m.relation === 'audio_track' ? 'Audio' : MV_LABEL[m.relation];
+    return vis(v) ? `<a class="chip" href="index.html#/watch/${v.id}">${ic('play')}${lab}</a>` : `<span class="chip dim2">${lab}</span>`;
+  }).join('') || '<span class="muted">Belum ada media</span>';
+}
+function tabCatalog() {
+  const arts = S.artists.map(a => `<a class="btn sm" href="index.html#/channel/a:${a.id}">${esc(a.name)}${BADGE}</a>`).join(' ');
+  $('#stBody').innerHTML = `<p class="muted" style="margin-bottom:14px;max-width:72ch">Audio dan video muzik bagi setiap lagu digabungkan dalam satu saluran artis. Pratonton saluran: ${arts}</p>` +
+    (S.releases.length ? S.releases.map(r => `<section class="sec"><div class="cathead"><h3>${esc(r.title || 'Tanpa tajuk')}</h3><span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></div>
+      ${r.tracks.map((t, i) => `<div class="catrow"><span class="cn">${i + 1}</span><div class="ct"><strong>${esc(t.title || 'Tanpa tajuk')}</strong><span class="muted">${esc(t.isrc || 'Tiada ISRC')}</span></div><div class="media">${mediaChips(t)}</div></div>`).join('')}</section>`).join('')
+    : '<div class="empty"><h2>Katalog kosong</h2><p>Lagu dan video muzik akan dipaparkan di sini.</p></div>');
+}
+
+function tabApi() {
+  const nk = UI.newKey; UI.newKey = null;
+  const base = 'https://api.rocvid.example/v1';
+  const ex = `curl -X POST ${base}/artists \\\n  -H "Authorization: Bearer rvm_live_..." \\\n  -H "Idempotency-Key: $(uuidgen)" \\\n  -H "Content-Type: application/json" \\\n  -d '{"name":"Nada Demo","country":"MY"}'`;
+  $('#stBody').innerHTML = `<section class="sec"><h3>Kunci API</h3>
+    <p class="muted" style="max-width:70ch">Gunakan kunci ini untuk menghantar release melalui API. Kunci penuh hanya dipaparkan sekali. Ini demo; kunci sebenar dijana oleh pelayan anda.</p>
+    ${nk ? `<div class="keybox"><code>${esc(nk)}</code></div>` : ''}
+    <div class="actions" style="margin-top:12px"><button class="btn primary" data-sa="makeKey">${ic('plus')}<span>Cipta kunci baharu</span></button></div>
+    ${S.keys.length ? `<div class="alist">${S.keys.map(k => `<div class="arow"><div><code>${esc(k.prefix)}...</code><p class="st"><span>Dicipta ${ago(k.t)}</span></p></div><button class="btn sm danger" data-sa="revokeKey:${k.id}">Batalkan</button></div>`).join('')}</div>` : '<p class="muted">Belum ada kunci.</p>'}
+  </section>
+  <section class="sec"><h3>Aliran penghantaran</h3>
+    <div class="flow">
+      <span><code>POST /artists</code> daftar artis dan cipta saluran artis berlencana</span>
+      <span><code>POST /uploads</code> dapatkan URL muat naik audio, gambar dan video</span>
+      <span><code>POST /releases</code> dan <code>POST /releases/{id}/tracks</code> cipta release dan lagu</span>
+      <span><code>POST /videos</code> pautkan video muzik ke lagu</span>
+      <span><code>GET /releases/{id}/validation</code> semak syarat, kemudian <code>POST /releases/{id}/submit</code></span>
+      <span>Webhook <code>release.status_changed</code> memberitahu perubahan status</span>
+    </div>
+    <pre><code>${esc(ex)}</code></pre>
+    <p class="muted">Spesifikasi penuh: rocvid_music_api.yaml</p></section>`;
+}
+
+/* ---------- Editor release ---------- */
+function coverHTML(rel) {
+  const c = rel.cover, ok = c && c.w === c.h && c.w >= 3000;
+  return `<div class="covrow"><div class="covprev" style="--g:${grad(rel.id)}">${c ? `<img src="${U(c.url)}" alt="Pratonton muka depan">` : ''}</div>
+    <div><label class="drop" for="fCover"><span>${c ? esc(c.name) : 'Pilih gambar muka depan'}</span><small>JPG atau PNG, segi empat sama, sekurang-kurangnya 3000 x 3000 piksel.</small></label>
+    <input class="sr" id="fCover" type="file" accept="image/jpeg,image/png" data-cover>
+    ${c ? `<p class="dim ${ok ? 'ok' : 'bad'}">${ic(ok ? 'check' : 'x')}<span>${c.w} x ${c.h} piksel${ok ? '' : ', tidak memenuhi syarat'}</span></p>` : ''}</div></div>`;
+}
+function trackHTML(rel, t, i) {
+  const spec = t.audioName ? `${esc(t.audioName)}${t.rate ? `, ${(t.rate / 1000).toFixed(1).replace('.0', '')} kHz / ${t.depth}-bit` : ''}${t.dur ? `, ${fmt(t.dur)}` : ''}` : 'Pilih fail audio (WAV atau FLAC)';
+  const mv = t.videos.filter(x => x.relation !== 'audio_track'), tf = f => `data-tf="${t.id}:${f}"`;
+  return `<div class="tk"><div class="tkh"><strong>Lagu ${i + 1}</strong>${rel.tracks.length > 1 ? `<button class="btn ghost sm" data-sa="rmTrack:${t.id}" aria-label="Buang lagu ${i + 1}">${ic('trash')}</button>` : ''}</div>
+    <div class="fgrid">
+      ${F('Tajuk lagu', `<input ${tf('title')} maxlength="200" value="${esc(t.title)}">`)}
+      ${F('Tajuk versi (pilihan)', `<input ${tf('version')} value="${esc(t.version)}">`)}
+      ${F('ISRC', `<input ${tf('isrc')} class="uc" maxlength="12" placeholder="MYABC2600001" value="${esc(t.isrc)}">`)}
+      ${F('Kandungan eksplisit', `<select ${tf('explicit')}>${opts(EXPL, t.explicit)}</select>`)}
+      ${F('Komposer', `<input ${tf('composer')} value="${esc(t.composer)}">`)}
+      ${F('Penulis lirik', `<input ${tf('lyricist')} value="${esc(t.lyricist)}">`)}
+      ${F('Penerbit rakaman (pilihan)', `<input ${tf('producer')} value="${esc(t.producer)}">`)}
+      ${F('Penerbit muzik (pilihan)', `<input ${tf('publisher')} value="${esc(t.publisher)}">`)}
+    </div>
+    <label class="drop sm" for="au-${t.id}"><span>${spec}</span><small>Audio tanpa mampatan, sekurang-kurangnya 16-bit / 44.1 kHz. Format dan kualiti dikesan daripada fail.</small></label>
+    <input class="sr" id="au-${t.id}" type="file" accept=".wav,.flac,audio/wav,audio/flac" data-audio="${t.id}">
+    <div class="mvbox"><strong>Video muzik untuk lagu ini</strong>
+      ${mv.map(m => { const v = byId(m.id); return `<div class="mvrow"><span>${esc(v ? v.title : 'Video')}</span><button class="btn ghost sm" data-sa="rmMv:${t.id}:${m.id}" aria-label="Buang video">${ic('trash')}</button></div>`; }).join('')}
+      <div class="mvadd"><select ${tf('mvType')} aria-label="Jenis video">${opts(MV_TYPES, t.mvType)}</select>
+        <label class="btn" for="mv-${t.id}">${ic('film')}<span>Tambah video</span></label>
+        <input class="sr" id="mv-${t.id}" type="file" accept="video/*" data-mv="${t.id}"></div>
+    </div></div>`;
+}
+const tracksHTML = rel => rel.tracks.map((t, i) => trackHTML(rel, t, i)).join('');
+
+function panelHTML(rel) {
+  const { errors, total } = validate(rel), pct = Math.round((total - errors.length) / total * 100);
+  let h = `<h3><span class="n">4</span>Semak dan hantar</h3>
+    <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><p class="pct">${pct}% syarat dipenuhi</p>`;
+  h += errors.length ? `<ul class="errs">${errors.map(e => `<li>${ic('x')}<span>${esc(e.msg)}</span></li>`).join('')}</ul>` : `<p class="okmsg">${ic('check')}<span>Semua syarat dipenuhi.</span></p>`;
+  if (editable(rel)) h += `<button class="btn primary wide" data-sa="submit" ${errors.length ? 'disabled' : ''}>Hantar untuk semakan</button><button class="btn ghost wide" data-sa="delRel">Padam draf</button>`;
+  else {
+    h += '<div class="demo"><p class="muted">Simulasi pasukan Rocvid (demo)</p>';
+    if (['submitted', 'in_review'].includes(rel.status)) h += '<button class="btn primary wide" data-sa="approve">Luluskan</button><button class="btn wide" data-sa="reject">Tolak</button>';
+    if (rel.status === 'approved') h += '<button class="btn primary wide" data-sa="publish">Terbitkan</button>';
+    if (['approved', 'live'].includes(rel.status)) h += '<button class="btn danger wide" data-sa="takedown">Tarik balik</button>';
+    if (rel.status === 'live') h += `<a class="btn sun wide" href="index.html#/channel/a:${rel.primary[0]}">Lihat di Rocvid</a>`;
+    h += '</div>';
+  }
+  h += `<ol class="log">${rel.log.slice().reverse().map(l => `<li><span class="status ${l.s}">${STATUS_LABEL[l.s]}</span><span class="muted">${ago(l.t)}</span></li>`).join('')}</ol>`;
+  return h;
+}
+
+function renderEditor() {
+  const rel = curRel();
+  const artOpts = (cur, none) => (none ? '<option value="">Tiada</option>' : '') + S.artists.map(a => `<option value="${a.id}" ${a.id === cur ? 'selected' : ''}>${esc(a.name)}</option>`).join('');
+  const d = f => `data-f="${f}"`;
+  $('#main').innerHTML = `
+    <div class="edtop"><button class="btn ghost" data-sa="edBack">${ic('back')}<span>Semua release</span></button><span class="status ${rel.status}">${STATUS_LABEL[rel.status]}</span></div>
+    <h1 class="ph" id="edTitle">${esc(rel.title || 'Release baharu')}</h1>
+    ${rel.status === 'rejected' ? `<div class="note bad"><strong>Ditolak:</strong> ${esc(rel.rejection)}</div>` : ''}
+    <div class="ed"><fieldset class="edmain" ${editable(rel) ? '' : 'disabled'}>
+      <section class="sec"><h3><span class="n">1</span>Maklumat release</h3><div class="fgrid">
+        ${F('Tajuk release', `<input ${d('title')} maxlength="200" value="${esc(rel.title)}">`)}
+        ${F('Tajuk versi (pilihan)', `<input ${d('version')} placeholder="cth. Acoustic" value="${esc(rel.version)}">`)}
+        ${F('Jenis', `<select ${d('type')}>${opts(RTYPES, rel.type)}</select>`)}
+        ${F('Artis utama', `<select ${d('primary')}>${artOpts(rel.primary[0])}</select>`)}
+        ${F('Artis jemputan (pilihan)', `<select ${d('featured')}>${artOpts(rel.featured[0], true)}</select>`)}
+        ${F('Nama label', `<input ${d('label')} value="${esc(rel.label)}">`)}
+        ${F('Genre', `<select ${d('genre')}><option value="">Pilih genre</option>${opts(GENRES.map(g => [g, g]), rel.genre)}</select>`)}
+        ${F('Bahasa', `<select ${d('language')}>${opts(LANGS, rel.language)}</select>`)}
+        ${F('Tarikh keluaran asal', `<input type="date" ${d('origDate')} value="${esc(rel.origDate)}">`)}
+        ${F('Tarikh keluaran di Rocvid', `<input type="date" ${d('relDate')} value="${esc(rel.relDate)}">`)}
+        ${F('UPC / EAN', `<input ${d('upc')} inputmode="numeric" maxlength="13" placeholder="12 atau 13 digit" value="${esc(rel.upc)}">`)}
+        ${F('Kandungan eksplisit', `<select ${d('explicit')}>${opts(EXPL, rel.explicit)}</select>`)}
+        ${F('P-line (hak rakaman)', `<input ${d('p')} placeholder="2026 Nama Label" value="${esc(rel.p)}">`)}
+        ${F('C-line (hak cipta)', `<input ${d('c')} placeholder="2026 Nama Pemilik" value="${esc(rel.c)}">`)}
+      </div>
+      <div class="terr"><span class="lbl">Wilayah pengedaran</span>${TERRS.map(([k, l]) => `<label><input type="checkbox" data-terr="${k}" ${rel.territories.includes(k) ? 'checked' : ''}>${l}</label>`).join('')}</div></section>
+      <section class="sec"><h3><span class="n">2</span>Gambar muka depan</h3><div id="coverBox">${coverHTML(rel)}</div></section>
+      <section class="sec"><h3><span class="n">3</span>Lagu, kredit dan video muzik</h3><div id="tracksBox">${tracksHTML(rel)}</div>
+        <button class="btn" data-sa="addTrack">${ic('plus')}<span>Tambah lagu</span></button></section>
+    </fieldset><aside class="chkp"><div id="chk">${panelHTML(rel)}</div></aside></div>`;
+}
+function refreshCheck() { const r = curRel(); if (r && $('#chk')) $('#chk').innerHTML = panelHTML(r); }
+function refreshTracks() { const r = curRel(); $('#tracksBox').innerHTML = tracksHTML(r); refreshCheck(); }
+
+/* Baca format, kadar sampel, kedalaman bit dan tempoh daripada fail audio */
+async function readAudio(f, url) {
+  const ext = (f.name.split('.').pop() || '').toLowerCase(), out = { format:ext, rate:0, depth:0, dur:0 };
+  try {
+    const b = new DataView(await f.slice(0, 64).arrayBuffer());
+    if (ext === 'wav' && b.getUint32(0) === 0x52494646 && b.getUint32(12) === 0x666d7420) { out.rate = b.getUint32(24, true); out.depth = b.getUint16(34, true); }
+    else if (ext === 'flac' && b.getUint32(0) === 0x664c6143) {
+      out.rate = (b.getUint8(18) << 12) | (b.getUint8(19) << 4) | (b.getUint8(20) >> 4);
+      out.depth = (((b.getUint8(20) & 1) << 4) | (b.getUint8(21) >> 4)) + 1;
+    }
+  } catch (e) {}
+  out.dur = await new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => res(isFinite(a.duration) ? a.duration : 0); a.onerror = () => res(0); a.src = url; });
+  return out;
+}
+async function onFile(el) {
+  const rel = curRel(), f = el.files[0]; if (!rel || !f) return;
+  if (el.dataset.cover !== undefined) {
+    if (!f.type.startsWith('image/')) return toast('Pilih fail imej');
+    const ref = Store.putFile(f), im = new Image();
+    im.onload = () => { rel.cover = { url:ref, w:im.naturalWidth, h:im.naturalHeight, name:f.name }; save(); $('#coverBox').innerHTML = coverHTML(rel); refreshCheck(); };
+    im.onerror = () => toast('Imej tidak dapat dibaca');
+    im.src = U(ref);
+  } else if (el.dataset.audio) {
+    const t = rel.tracks.find(x => x.id === el.dataset.audio), ref = Store.putFile(f), a = await readAudio(f, U(ref));
+    Object.assign(t, { audioUrl:ref, audioName:f.name, format:a.format, rate:a.rate, depth:a.depth, dur:a.dur }); save(); refreshTracks();
+  } else if (el.dataset.mv) {
+    if (!f.type.startsWith('video/')) return toast('Pilih fail video');
+    const t = rel.tracks.find(x => x.id === el.dataset.mv), a = artistById(rel.primary[0]);
+    if (!a) return toast('Pilih artis utama dahulu');
+    const v = { id:'v' + uid(), type:t.mvType, title:`${t.title || 'Tanpa tajuk'} (${MV_LABEL[t.mvType]})`, desc:'', cat:'Muzik', channel:a.name, chKey:'a:' + a.id,
+      src:Store.putFile(f), views:0, likes:0, dislikes:0, t:Date.now(), privacy:'Awam', hidden:rel.status !== 'live', trackId:t.id, releaseId:rel.id, comments:[] };
+    S.videos.unshift(v); t.videos.push({ id:v.id, relation:t.mvType }); save();
+    refreshTracks(); toast('Video dipautkan. Ia tersedia selepas release diterbitkan.');
+  }
+}
+function onField(e) {
+  const el = e.target;
+  if (el.type === 'file') { if (e.type === 'change') onFile(el); return; }
+  if (el.id === 'aName') { $('#chPrev').innerHTML = chPrev(el.value); return; }
+  const rel = UI.editing && curRel(); if (!rel) return;
+  if (el.dataset.f !== undefined) {
+    const f = el.dataset.f;
+    if (f === 'primary') rel.primary = el.value ? [el.value] : [];
+    else if (f === 'featured') rel.featured = el.value ? [el.value] : [];
+    else rel[f] = el.value;
+    $('#edTitle').textContent = rel.title || 'Release baharu';
+  } else if (el.dataset.tf) {
+    const [tid, f] = el.dataset.tf.split(':'), t = rel.tracks.find(x => x.id === tid); if (!t) return;
+    t[f] = f === 'isrc' ? el.value.toUpperCase().replace(/\s/g, '') : el.value;
+  } else if (el.dataset.terr) {
+    const k = el.dataset.terr;
+    rel.territories = el.checked ? [...new Set([...rel.territories, k])] : rel.territories.filter(x => x !== k);
+  } else return;
+  save(); refreshCheck();
+}
+
+/* Penerbitan: cipta item audio dalam saluran artis dan dedahkan video muzik */
+function publish(rel) {
+  const a = artistById(rel.primary[0]);
+  rel.tracks.forEach(t => {
+    const title = t.title + (t.version ? ` (${t.version})` : '');
+    const au = { id:'v' + uid(), type:'audio_track', title, desc:`Daripada keluaran "${rel.title}"\n℗ ${rel.p}\n© ${rel.c}`, cat:'Muzik', channel:a.name, chKey:'a:' + a.id,
+      src:t.audioUrl, thumb:rel.cover.url, dur:t.dur, views:0, likes:0, dislikes:0, t:Date.now(), privacy:'Awam', trackId:t.id, releaseId:rel.id, comments:[] };
+    S.videos.unshift(au); t.videos.unshift({ id:au.id, relation:'audio_track' });
+    t.videos.forEach(m => {
+      const v = byId(m.id);
+      if (v && m.relation !== 'audio_track') { v.hidden = false; v.title = `${title} (${MV_LABEL[m.relation]})`; v.desc = `${MV_LABEL[m.relation]} untuk "${title}".`; }
+    });
+  });
+  setStatus(rel, 'live');
+}
+function takedown(rel) { S.videos.forEach(v => { if (v.releaseId === rel.id) v.removed = true; }); setStatus(rel, 'taken_down'); }
+
+function studioAct(s) {
+  const [a, x, y] = s.split(':'), rel = curRel();
+  switch (a) {
+    case 'tab': UI.tab = x; render(); break;
+    case 'newRel':
+      if (!S.artists.length) { toast('Daftar artis dahulu'); UI.tab = 'artists'; render(); return; }
+      { const r = newRelease(); S.releases.unshift(r); save(); UI.editing = r.id; render(); window.scrollTo(0, 0); }
+      break;
+    case 'openRel': UI.editing = x; render(); window.scrollTo(0, 0); break;
+    case 'edBack': UI.editing = null; render(); break;
+    case 'addTrack': rel.tracks.push(newTrack()); save(); refreshTracks(); break;
+    case 'rmTrack': S.videos = S.videos.filter(v => v.trackId !== x); rel.tracks = rel.tracks.filter(t => t.id !== x); save(); refreshTracks(); break;
+    case 'rmMv': { const t = rel.tracks.find(t => t.id === x); S.videos = S.videos.filter(v => v.id !== y); t.videos = t.videos.filter(m => m.id !== y); save(); refreshTracks(); break; }
+    case 'submit':
+      if (validate(rel).errors.length) return toast('Masih ada syarat yang belum dipenuhi');
+      rel.rejection = ''; setStatus(rel, 'submitted'); toast('Release dihantar untuk semakan'); render(); break;
+    case 'approve': setStatus(rel, 'approved'); toast('Release diluluskan'); render(); break;
+    case 'reject': rel.rejection = 'Maklumat atau gambar muka depan tidak mematuhi garis panduan Rocvid (contoh demo).'; setStatus(rel, 'rejected'); toast('Release ditolak. Betulkan dan hantar semula.'); render(); break;
+    case 'publish': publish(rel); toast('Release diterbitkan ke saluran ' + artistById(rel.primary[0]).name); render(); break;
+    case 'takedown': takedown(rel); toast('Release ditarik balik'); render(); break;
+    case 'delRel':
+      S.videos = S.videos.filter(v => v.releaseId !== rel.id); S.releases = S.releases.filter(r => r.id !== rel.id);
+      save(); UI.editing = null; toast('Draf dipadam'); render(); break;
+    case 'addArtist': {
+      const n = $('#aName').value.trim(), err = m => { $('#aErr').textContent = m; };
+      if (!n) return err('Masukkan nama artis.');
+      if (S.artists.some(a => a.name.toLowerCase() === n.toLowerCase())) return err('Nama artis ini sudah didaftarkan.');
+      if (S.videos.some(v => !v.chKey.startsWith('a:') && v.channel.toLowerCase() === n.toLowerCase())) return err('Nama ini digunakan oleh saluran biasa. Pilih nama lain.');
+      const base = slugify(n).slice(0, 40).replace(/-+$/, ''); let slug = base, i = 1;
+      while (S.artists.some(a => a.slug === slug)) { i++; slug = base + '-' + i; }
+      const art = { id:'a' + uid(), name:n, slug, country:$('#aCountry').value, bio:$('#aBio').value.trim(), dist:S.dist.id };
+      S.artists.push(art); S.chSubs['a:' + art.id] = 0; save(); toast(`Saluran artis ${n} dicipta dengan lencana`); render(); break;
+    }
+    case 'makeKey': {
+      const r = new Uint8Array(20); crypto.getRandomValues(r);
+      const key = 'rvm_live_' + [...r].map(b => b.toString(36).padStart(2, '0')).join('').slice(0, 32);
+      S.keys.unshift({ id:uid(), prefix:key.slice(0, 17), t:Date.now() }); UI.newKey = key; save(); render(); break;
+    }
+    case 'revokeKey': S.keys = S.keys.filter(k => k.id !== x); save(); render(); break;
+  }
+}
+
+document.addEventListener('click', e => {
+  let el;
+  if ((el = e.target.closest('[data-sa]'))) { studioAct(el.dataset.sa); return; }
+  if (e.target.closest('#themeBtn')) setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const o = e.target.closest && e.target.closest('[data-sa]');
+  if (o && e.target === o && o.tagName !== 'BUTTON') o.click();
+});
+document.addEventListener('input', onField);
+document.addEventListener('change', onField);
+window.addEventListener('pagehide', () => Store.flush());
+document.addEventListener('visibilitychange', () => { if (document.hidden) Store.flush(); });
+document.addEventListener('click', e => { if (e.target.closest('a[href]')) Store.flush(); });
+
+(async () => {
+  await Store.init();
+  let st = await Store.load();
+  if (!st || st.v !== 2) st = seed();
+  S = st; Store.save(S);
+  await Store.loadFiles();
+  setTheme(S.me.prefs.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+  render();
+})();
+</script>
+</body>
+</html>
