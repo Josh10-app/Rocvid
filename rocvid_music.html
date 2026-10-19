@@ -8,14 +8,12 @@
 :root{
   --bg:#F4F3FA;--surface:#FFFFFF;--surface2:#ECEBF7;--ink:#12102A;--muted:#66647E;--line:#E3E1F0;
   --accent:#5148FF;--accent-ink:#FFFFFF;--sun:#FFC83D;--danger:#D62F4B;--ok:#16895F;
-  --shadow:0 1px 2px rgba(20,16,60,.06),0 10px 30px rgba(20,16,60,.09);
-  color-scheme:light;
+  --shadow:0 1px 2px rgba(20,16,60,.06),0 10px 30px rgba(20,16,60,.09);color-scheme:light;
 }
 :root[data-theme="dark"]{
   --bg:#0A0918;--surface:#14132B;--surface2:#1D1C3A;--ink:#F3F2FF;--muted:#A5A3C6;--line:#2A2950;
   --accent:#8B84FF;--accent-ink:#0A0918;--danger:#FF6B84;--ok:#3ECF94;
-  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 36px rgba(0,0,0,.45);
-  color-scheme:dark;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 36px rgba(0,0,0,.45);color-scheme:dark;
 }
 *{box-sizing:border-box;margin:0}
 body{font:15px/1.45 "Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
@@ -25,12 +23,13 @@ a{color:inherit}
 .ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .sr{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
 .ab{width:18px;height:18px;vertical-align:-4px;margin-left:5px;flex:none}
-.muted{color:var(--muted);font-size:13px}
+.muted,.ch,.st{color:var(--muted);font-size:13px}
+.st{display:flex;gap:12px;flex-wrap:wrap}
 
-.top{position:sticky;top:0;z-index:30;height:68px;display:flex;align-items:center;gap:14px;padding:0 24px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.top{position:sticky;top:0;z-index:30;height:68px;display:flex;align-items:center;gap:12px;padding:0 24px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:850;font-size:25px;letter-spacing:-.05em;color:inherit;text-decoration:none}
 .logo svg{width:36px;height:36px}
-.stag{display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:#15132B;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px;letter-spacing:0}
+.stag{display:inline-flex;align-items:center;gap:6px;background:var(--sun);color:#15132B;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px}
 .top .sp{flex:1}
 .btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 18px;font-weight:650;cursor:pointer;text-decoration:none;white-space:nowrap}
 .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
@@ -39,38 +38,34 @@ a{color:inherit}
 .btn.sm{padding:5px 12px;font-size:13px}
 .btn.wide{width:100%;justify-content:center;margin-top:8px}
 .btn.danger{color:var(--danger);border-color:var(--danger)}
-.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 .btn .ic{width:20px;height:20px}
 .iconbtn{width:42px;height:42px;padding:0;justify-content:center}
 
 main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .ph{font-size:30px;font-weight:850;letter-spacing:-.04em;margin-bottom:6px}
-.shead{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
 .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 22px;overflow-x:auto}
-.tabs button{border:0;background:none;padding:11px 18px;font-weight:680;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px}
+.tabs button{border:0;background:none;padding:11px 18px;font-weight:680;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .status{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:3px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted);white-space:nowrap}
 .status.live,.status.approved{color:var(--ok);border-color:currentColor}
 .status.live{background:color-mix(in srgb,var(--ok) 14%,transparent)}
-.status.submitted,.status.in_review{color:var(--accent);border-color:currentColor}
-.status.rejected{color:var(--danger);border-color:currentColor}
+.status.submitted,.status.pending{color:var(--accent);border-color:currentColor}
+.status.rejected,.status.suspended{color:var(--danger);border-color:currentColor}
 .status.taken_down{text-decoration:line-through}
-
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
 .stats div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid}
 .stats b{font-size:30px;font-weight:850;letter-spacing:-.04em}
 .stats span{color:var(--muted);font-size:13px}
-.actions{display:flex;margin-bottom:16px}
-.rlist{display:grid;gap:12px}
+.actions{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.rlist,.alist{display:grid;gap:12px}
 .rrow{display:flex;align-items:center;gap:16px;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:20px;cursor:pointer}
 .rrow:hover{border-color:var(--accent)}
 .rcov{position:relative;flex:none;width:70px;height:70px;border-radius:12px;overflow:hidden;background:var(--g)}
 .rcov img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .rinfo{flex:1;min-width:0}
 .rinfo h3{font-size:17px;font-weight:720}
-.ch,.st{color:var(--muted);font-size:13px}
-.st{display:flex;gap:12px;flex-wrap:wrap}
-.empty{max-width:440px;margin:60px auto;text-align:center}
+.empty{max-width:460px;margin:50px auto;text-align:center}
 .empty h2{font-size:20px;margin-bottom:6px}
 .empty p{color:var(--muted);margin-bottom:18px}
 
@@ -80,7 +75,8 @@ main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .ed{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
 .edmain{border:0;padding:0;min-width:0}
 .edmain:disabled{opacity:.8}
-.edtop{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.edtop{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.savest{color:var(--muted);font-size:13px;margin-left:auto}
 .chkp{position:sticky;top:90px}
 .chkp>div{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;box-shadow:var(--shadow)}
 .chkp h3{display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:12px}
@@ -92,13 +88,16 @@ main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .errs .ic{width:16px;height:16px;margin-top:3px;stroke-width:2.6}
 .okmsg{display:flex;gap:8px;align-items:center;color:var(--ok);font-weight:650}
 .demo{margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.demo input{width:100%;margin-top:8px;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:9px 12px}
 .log{list-style:none;padding:0;margin-top:14px;display:grid;gap:6px}
 .log li{display:flex;justify-content:space-between;align-items:center}
 
 .f{display:grid;gap:6px;font-weight:600;font-size:14px;align-content:start}
 .f input,.f select,.f textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font-weight:400}
 .f input.uc{text-transform:uppercase}
+.f small{color:var(--muted);font-weight:400}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fgrid .full{grid-column:1/-1}
 .terr{margin-top:14px}
 .terr .lbl{display:block;font-weight:600;font-size:14px;margin-bottom:8px}
 .terr label{display:inline-flex;align-items:center;gap:6px;margin:0 8px 8px 0;border:1px solid var(--line);padding:6px 13px;border-radius:999px;font-size:14px;cursor:pointer;background:var(--bg)}
@@ -106,6 +105,8 @@ main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .drop.sm{padding:12px;margin-top:14px}
 .drop:hover,.drop:focus-within{border-color:var(--accent)}
 .drop small{display:block;color:var(--muted);font-weight:400;margin-top:2px}
+.chk{display:flex;gap:10px;align-items:flex-start;font-weight:400;font-size:14px}
+.chk input{margin-top:4px}
 .covrow{display:flex;gap:18px;align-items:flex-start;flex-wrap:wrap}
 .covprev{position:relative;width:156px;aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--g)}
 .covprev img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
@@ -122,16 +123,34 @@ main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .mvadd select{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 12px}
 .note{padding:12px 14px;border-radius:14px;margin-bottom:14px;border:1px solid var(--line);background:var(--surface)}
 .note.bad{border-color:var(--danger);color:var(--danger)}
+.note.info{border-color:var(--accent)}
 .err{color:var(--danger);font-weight:600;min-height:1.2em;font-size:14px}
 
+/* Carian artis (taip untuk padan) */
+.ap{position:relative}
+.apbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:6px 8px;min-height:44px}
+.apbox:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+.apchip{display:inline-flex;align-items:center;gap:4px;background:var(--surface2);border-radius:999px;padding:3px 4px 3px 12px;font-weight:650;font-size:14px}
+.apchip button{border:0;background:none;cursor:pointer;color:var(--muted);display:grid;place-items:center;padding:2px;border-radius:50%}
+.apchip .ic{width:16px;height:16px}
+.apin{flex:1;min-width:140px;border:0!important;background:none!important;outline:none;padding:6px 4px!important;box-shadow:none!important}
+.aplist{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;list-style:none;margin:0;padding:6px;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);max-height:300px;overflow:auto}
+.aplist[hidden]{display:none}
+.apitem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;cursor:pointer;font-weight:560}
+.apitem[aria-selected="true"],.apitem:hover{background:var(--surface2)}
+.apitem .av{width:30px;height:30px;font-size:13px}
+.apitem mark{background:color-mix(in srgb,var(--sun) 55%,transparent);color:inherit;border-radius:3px}
+.apitem small{margin-left:auto;color:var(--muted);font-weight:500}
+.apitem.new{color:var(--accent)}
+.apempty{padding:10px;color:var(--muted);font-size:14px}
+
+.av{flex:none;width:52px;height:52px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
 .two-col{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:22px;align-items:start}
-.chprev{display:flex;gap:14px;align-items:center;padding:14px;border-radius:16px;background:var(--bg);border:1px dashed var(--line);margin:14px 0 8px}
-.av{flex:none;width:52px;height:52px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px}
-.chprev strong{display:flex;align-items:center;gap:4px;font-size:17px}
-.alist{display:grid;gap:10px}
 .arow{display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;flex-wrap:wrap}
-.arow>div{flex:1;min-width:150px}
+.arow>div:nth-child(2){flex:1;min-width:170px}
 .arow strong{display:flex;align-items:center;font-size:16px}
+.arow .acts{display:flex;gap:6px;flex-wrap:wrap}
 .badgebox{display:flex;gap:16px;align-items:center;padding:18px;border-radius:20px;border:1px solid color-mix(in srgb,var(--sun) 50%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--sun) 18%,var(--surface)),var(--surface));margin-bottom:14px}
 .badgebox .ab{width:56px;height:56px;margin:0}
 .badgebox p{color:var(--muted);font-size:14px}
@@ -144,18 +163,24 @@ main{max-width:1240px;margin:0 auto;padding:28px 26px 64px}
 .chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 13px;font-size:13px;font-weight:600;text-decoration:none}
 .chip .ic{width:14px;height:14px}
 .chip.dim2{color:var(--muted)}
+.cogrid{display:grid;grid-template-columns:max-content 1fr;gap:8px 22px;font-size:14px}
+.cogrid dt{color:var(--muted)}
+.cogrid dd{margin:0;overflow-wrap:anywhere}
+.landing{max-width:760px;margin:40px auto;text-align:center;padding:36px 28px;border-radius:28px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.landing .ab{width:64px;height:64px;margin:0 0 14px}
+.landing h1{font-size:34px;letter-spacing:-.04em;line-height:1.1;margin-bottom:10px}
+.landing p{color:var(--muted);max-width:52ch;margin:0 auto 18px}
+.landing ul{list-style:none;padding:0;display:grid;gap:8px;max-width:420px;margin:0 auto 22px;text-align:left}
+.landing li{display:flex;gap:10px;align-items:flex-start}
+.landing li .ic{color:var(--ok);margin-top:2px;stroke-width:2.6;width:18px;height:18px}
 pre{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:14px;overflow:auto;font-size:13px;line-height:1.55}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
 .keybox{padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--sun) 28%,transparent);border:1px solid var(--sun);margin:12px 0;overflow-wrap:anywhere}
 .flow{display:grid;gap:6px;font-size:14px}
-
-#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:14px;font-weight:650;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:calc(100vw - 32px)}
-#toast.on{opacity:1;transform:translateX(-50%)}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (max-width:1100px){.ed{grid-template-columns:1fr}.chkp{position:static}.two-col{grid-template-columns:1fr}}
 @media (max-width:760px){
   .top{padding:0 12px;gap:8px}
-  .logo span,.top .btn span{display:none}
+  .logo span,.top .btn span,.top .gbtn span{display:none}
   .top .btn{padding:10px}
   main{padding:18px 14px 64px}
   .fgrid{grid-template-columns:1fr}
@@ -176,180 +201,307 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
   <span class="stag"><svg class="ic" style="width:16px;height:16px" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>Music Studio</span>
   <span class="sp"></span>
   <button class="btn iconbtn" id="themeBtn" aria-label="Tukar tema gelap atau cerah"></button>
-  <a class="btn" href="index.html"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg><span>Kembali ke Rocvid</span></a>
+  <div id="auth"></div>
 </header>
 
-<main id="main"></main>
-<div id="toast" role="status" aria-live="polite"></div>
+<main id="main"><div class="empty"><p>Memuatkan…</p></div></main>
 
+<dialog id="mergeDlg" aria-labelledby="mgT">
+  <form id="mergeForm">
+    <header><h2 id="mgT">Gabung dengan saluran biasa</h2><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+    <p class="muted">Lagu dan video muzik <b id="mgArtist"></b> akan diterbitkan di saluran yang anda pilih. Saluran itu mendapat lencana artis, dan kandungan serta pelanggan saluran artis asal dipindahkan ke situ.</p>
+    <label class="f">Saluran anda<select id="mgCh"></select></label>
+    <p class="err" id="mgErr" role="alert"></p>
+    <footer><button type="button" class="btn" data-close>Batal</button><button type="submit" class="btn primary" id="mgGo">Gabungkan</button></footer>
+  </form>
+</dialog>
+
+<dialog id="achDlg" aria-labelledby="achT">
+  <form id="achForm">
+    <header><h2 id="achT">Edit saluran artis</h2><button type="button" class="x" data-close aria-label="Tutup"><svg class="ic" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></header>
+    <label class="f">Bio saluran<textarea id="achBio" rows="4" maxlength="500"></textarea></label>
+    <div class="fgrid">
+      <label class="f">Gambar profil<input id="achAvatar" type="file" accept="image/*"></label>
+      <label class="f">Sepanduk<input id="achBanner" type="file" accept="image/*"></label>
+    </div>
+    <p class="err" id="achErr" role="alert"></p>
+    <footer><button type="button" class="btn" data-close>Batal</button><button type="submit" class="btn primary" id="achGo">Simpan</button></footer>
+  </form>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="rocvid-core.js"></script>
 <script>
-/* ================= Helper ================= */
-const $ = s => document.querySelector(s);
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const uid = () => Math.random().toString(36).slice(2, 9);
-const slugify = t => (t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'artis';
-const ICONS = {
-  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-  moon:'<path d="M21 13A9 9 0 1 1 11 3a7 7 0 0 0 10 10z"/>',
-  check:'<path d="M5 12l5 5 9-10"/>', x:'<path d="M6 6l12 12M18 6L6 18"/>', plus:'<path d="M12 5v14M5 12h14"/>',
-  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>', back:'<path d="M15 5l-7 7 7 7"/>',
-  film:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M16 4v16M3 12h18"/>',
-  play:'<path d="M8 5l11 7-11 7z" fill="currentColor" stroke="none"/>'
-};
-const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n]}</svg>`;
-const BADGE = (() => {
-  let lobes = '';
-  for (let i = 0; i < 10; i++) { const a = i * Math.PI / 5; lobes += `<circle cx="${(12 + 7.6 * Math.cos(a)).toFixed(2)}" cy="${(12 + 7.6 * Math.sin(a)).toFixed(2)}" r="3.5"/>`; }
-  return `<svg class="ab" viewBox="0 0 24 24" role="img" aria-label="Artis rasmi Rocvid"><title>Artis rasmi Rocvid</title>
-    <g fill="url(#abGrad)">${lobes}<circle cx="12" cy="12" r="8.4"/></g>
-    <g fill="none" stroke="#15132B" stroke-linecap="round" stroke-linejoin="round"><path d="M10.4 8.6v6.8M15.6 7.6v6.8" stroke-width="1.5"/><path d="M10.4 8.6l5.2-1" stroke-width="2.2"/></g>
-    <g fill="#15132B"><ellipse cx="8.9" cy="15.7" rx="1.9" ry="1.4" transform="rotate(-18 8.9 15.7)"/><ellipse cx="14.1" cy="14.7" rx="1.9" ry="1.4" transform="rotate(-18 14.1 14.7)"/></g></svg>`;
-})();
-const fmt = s => {
-  if (!isFinite(s) || s < 0) s = 0; s = Math.round(s);
-  const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
-  return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0');
-};
-const ago = t => {
-  const s = (Date.now() - t) / 1000;
-  if (s < 60) return 'baru sahaja';
-  if (s < 3600) return Math.floor(s / 60) + ' minit lalu';
-  if (s < 86400) return Math.floor(s / 3600) + ' jam lalu';
-  if (s < 2592000) return Math.floor(s / 86400) + ' hari lalu';
-  if (s < 31536000) return Math.floor(s / 2592000) + ' bulan lalu';
-  return Math.floor(s / 31536000) + ' tahun lalu';
-};
-const hue = seed => { let h = 0; for (const c of String(seed)) h = (h * 31 + c.charCodeAt(0)) % 360; return h; };
-const grad = seed => { const h = hue(seed); return `linear-gradient(135deg,hsl(${h} 58% 40%),hsl(${(h + 50) % 360} 62% 26%))`; };
-function makeCover(text, seed) {
-  const c = document.createElement('canvas'); c.width = c.height = 600;
-  const x = c.getContext('2d'), h = hue(seed), g = x.createLinearGradient(0, 0, 600, 600);
-  g.addColorStop(0, `hsl(${h} 72% 46%)`); g.addColorStop(1, `hsl(${(h + 60) % 360} 70% 24%)`);
-  x.fillStyle = g; x.fillRect(0, 0, 600, 600);
-  x.fillStyle = '#FFC83D'; x.beginPath(); x.arc(440, 160, 74, 0, Math.PI * 2); x.fill();
-  x.fillStyle = '#fff'; x.font = '800 58px "Avenir Next","Segoe UI",sans-serif';
-  const lines = []; let cur = '';
-  text.split(' ').forEach(w => { if (x.measureText((cur + ' ' + w).trim()).width > 480 && cur) { lines.push(cur); cur = w; } else cur = (cur + ' ' + w).trim(); });
-  lines.push(cur);
-  lines.slice(0, 3).forEach((l, i, a) => x.fillText(l, 52, 560 - (a.length - 1 - i) * 66));
-  return c.toDataURL('image/jpeg', .86);
-}
-let toastTimer;
-function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('on'), 2800); }
-
-/* ================= Simpanan dikongsi dengan index.html ================= */
-const Store = (() => {
-  const KEY = 'rocvid.state.v2', mem = {}, urls = {}; let db = null, timer, pending = null;
-  const open = () => new Promise(res => {
-    try {
-      const r = indexedDB.open('rocvid', 1);
-      r.onupgradeneeded = () => { r.result.createObjectStore('kv'); r.result.createObjectStore('files'); };
-      r.onsuccess = () => res(r.result); r.onerror = r.onblocked = () => res(null);
-    } catch (e) { res(null); }
-  });
-  const req = (store, mode, fn) => new Promise(res => {
-    if (!db) return res(undefined);
-    try {
-      const t = db.transaction(store, mode), rq = fn(t.objectStore(store));
-      t.oncomplete = () => res(rq && rq.result); t.onerror = t.onabort = () => res(undefined);
-    } catch (e) { res(undefined); }
-  });
-  const write = S => { const raw = JSON.stringify(S); if (db) req('kv', 'readwrite', s => s.put(raw, KEY)); else mem[KEY] = raw; };
-  return {
-    urls,
-    async init() { db = await open(); },
-    async load() { const raw = db ? await req('kv', 'readonly', s => s.get(KEY)) : mem[KEY]; try { return raw ? JSON.parse(raw) : null; } catch (e) { return null; } },
-    save(S) { pending = S; clearTimeout(timer); timer = setTimeout(() => { write(S); pending = null; }, 120); },
-    flush() { if (pending) { clearTimeout(timer); write(pending); pending = null; } },
-    async loadFiles() {
-      if (!db) return;
-      const keys = await req('files', 'readonly', s => s.getAllKeys()), vals = await req('files', 'readonly', s => s.getAll());
-      (keys || []).forEach((k, i) => { urls[k] = URL.createObjectURL(vals[i]); });
-    },
-    putFile(blob) { const k = 'f' + uid(); urls[k] = URL.createObjectURL(blob); if (db) req('files', 'readwrite', s => s.put(blob, k)); return 'idb:' + k; }
-  };
-})();
-const U = ref => (typeof ref === 'string' && ref.startsWith('idb:')) ? (Store.urls[ref.slice(4)] || '') : (ref || '');
-
-/* ================= Data demo (sama dengan index.html) ================= */
-const D = 864e5;
-const MV_TYPES = [['official_music_video', 'Video rasmi'], ['lyric_video', 'Video lirik'], ['visualizer', 'Visualizer'], ['live_performance', 'Persembahan langsung']];
-const MV_LABEL = { official_music_video:'Video rasmi', lyric_video:'Video lirik', visualizer:'Visualizer', live_performance:'Persembahan langsung' };
-const AUD = 'https://www.w3schools.com/html/horse.mp3';
-const MV1 = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-const MV2 = 'https://www.w3schools.com/html/mov_bbb.mp4';
-function seedMusic(S, o) {
-  const cover = makeCover(o.title, o.title), art = S.artists.find(a => a.id === o.aid), t0 = Date.now() - o.days * D, ch = 'a:' + o.aid;
-  const rid = 'r' + o.n, tid = 't' + o.n, tracks = [{ id:'ma' + o.n, relation:'audio_track' }];
-  S.videos.push({ id:'ma' + o.n, demo:true, type:'audio_track', title:o.title, desc:`Daripada keluaran "${o.title}"`, cat:'Muzik', channel:art.name, chKey:ch, src:AUD, thumb:cover, dur:6,
-    views:o.views, likes:Math.round(o.views / 14), dislikes:Math.round(o.views / 900), t:t0, privacy:'Awam', trackId:tid, releaseId:rid, comments:[] });
-  if (o.mv) {
-    S.videos.push({ id:'mv' + o.n, demo:true, type:o.mvType, title:`${o.title} (${MV_LABEL[o.mvType]})`, desc:`${MV_LABEL[o.mvType]} untuk "${o.title}".`, cat:'Muzik', channel:art.name, chKey:ch, src:o.mv,
-      views:o.views * 2, likes:Math.round(o.views / 8), dislikes:Math.round(o.views / 600), t:t0, privacy:'Awam', trackId:tid, releaseId:rid, comments:[] });
-    tracks.push({ id:'mv' + o.n, relation:o.mvType });
-  }
-  S.releases.push({ id:rid, title:o.title, version:'', type:'single', primary:[o.aid], featured:[], label:'Demo Records', genre:o.genre, language:'ms',
-    origDate:'2026-09-01', relDate:'2026-09-01', p:'2026 Demo Records', c:'2026 ' + art.name, upc:'12345678901' + o.n, territories:['WW'], explicit:'not_explicit',
-    cover:{ url:cover, w:3000, h:3000, name:'cover.jpg' }, status:'live', rejection:'', log:[{ s:'live', t:t0 }],
-    tracks:[{ id:tid, title:o.title, version:'', isrc:'MYABC26' + String(o.n).padStart(5, '0'), explicit:'not_explicit', audioUrl:AUD, audioName:'master.wav', format:'wav', rate:44100, depth:16, dur:6,
-      composer:art.name, lyricist:art.name, producer:'Demo Records', publisher:'Demo Publishing', mvType:'official_music_video', videos:tracks }] });
-}
-function seed() {
-  const S = { v:2, videos:[], artists:[], releases:[], keys:[], dist:{ id:'dist1', name:'Demo Records Sdn Bhd', status:'approved' },
-    chSubs:{ 'p:studio-bunga':12400, 'p:alam-kita':3280, 'a:a1':8120, 'a:a2':4310, 'a:a3':1960 },
-    me:{ name:'Saluran Saya', subs:[], liked:[], disliked:[], later:[], history:[], prefs:{ vol:1, muted:false, rate:1, autonext:true, theme:'' } } };
-  S.artists.push(
-    { id:'a1', name:'Nada Demo', slug:'nada-demo', country:'MY', bio:'Penyanyi pop demo untuk menunjukkan saluran artis Rocvid.', dist:'dist1' },
-    { id:'a2', name:'Laut Biru', slug:'laut-biru', country:'MY', bio:'Duo indie demo dari pantai timur.', dist:'dist1' },
-    { id:'a3', name:'Rimba Beat', slug:'rimba-beat', country:'MY', bio:'Penerbit muzik elektronik demo.', dist:'dist1' });
-  S.videos.push(
-    { id:'d1', demo:true, type:'standard', title:'Kisah Arnab Gergasi (animasi pendek)', desc:'Klip animasi percuma untuk menguji pemain Rocvid.\nMuat naik video anda sendiri untuk mula berkongsi.', cat:'Hiburan', channel:'Studio Bunga', chKey:'p:studio-bunga', src:MV2, views:18234, likes:1204, dislikes:31, t:Date.now() - 3 * D, privacy:'Awam',
-      comments:[{ who:'Aisyah', text:'Animasi ini comel betul!', t:Date.now() - 2 * D }, { who:'Farid', text:'Pemain video pun lancar.', t:Date.now() - D }] },
-    { id:'d2', demo:true, type:'standard', title:'Bunga mekar, rakaman masa berlalu', desc:'Rakaman masa berlalu (time-lapse) sekuntum bunga yang sedang mekar.', cat:'Vlog', channel:'Alam Kita', chKey:'p:alam-kita', src:MV1, views:5921, likes:402, dislikes:7, t:Date.now() - 9 * D, privacy:'Awam',
-      comments:[{ who:'Hana', text:'Cantik sungguh warna bunga ini.', t:Date.now() - 5 * D }] });
-  seedMusic(S, { n:1, aid:'a1', title:'Sinar Pagi', genre:'Pop', views:24310, days:7, mv:MV1, mvType:'official_music_video' });
-  seedMusic(S, { n:2, aid:'a2', title:'Ombak Senja', genre:'Indie', views:15840, days:4, mv:MV2, mvType:'visualizer' });
-  seedMusic(S, { n:3, aid:'a3', title:'Hutan Berirama', genre:'Elektronik', views:9120, days:2 });
-  return S;
-}
-
-/* ================= Studio ================= */
+/* ================= Pemalar ================= */
 const GENRES = ['Pop', 'Rock', 'Hip-hop/Rap', 'R&B', 'Dangdut', 'Nasyid', 'Tradisional', 'Elektronik', 'Jazz', 'Klasik', 'Indie', 'Lain-lain'];
 const LANGS = [['ms','Bahasa Melayu'],['en','English'],['id','Bahasa Indonesia'],['zh','Mandarin'],['ta','Tamil'],['ar','Arab'],['ja','Jepun'],['ko','Korea']];
 const TERRS = [['WW','Seluruh dunia'],['MY','Malaysia'],['SG','Singapura'],['ID','Indonesia'],['BN','Brunei'],['TH','Thailand'],['US','Amerika Syarikat'],['GB','United Kingdom']];
+const COUNTRIES = [['MY','Malaysia'],['SG','Singapura'],['ID','Indonesia'],['BN','Brunei'],['TH','Thailand'],['PH','Filipina'],['US','Amerika Syarikat'],['GB','United Kingdom'],['AU','Australia'],['JP','Jepun'],['KR','Korea Selatan']];
 const RTYPES = [['single','Single (1-3 lagu)'],['ep','EP (4-6 lagu)'],['album','Album (7+ lagu)'],['compilation','Kompilasi']];
 const EXPL = [['not_explicit','Tidak eksplisit'],['explicit','Eksplisit'],['clean','Versi bersih']];
-const STATUS_LABEL = { draft:'Draf', submitted:'Dihantar', in_review:'Disemak', approved:'Diluluskan', rejected:'Ditolak', live:'Live', taken_down:'Ditarik balik' };
+const MV_TYPES = [['official_music_video','Video rasmi'],['lyric_video','Video lirik'],['visualizer','Visualizer'],['live_performance','Persembahan langsung']];
+const MV_LABEL = Object.fromEntries(MV_TYPES.map(([k, l]) => [k, l[0].toUpperCase() + l.slice(1)]));
+const STATUS_LABEL = { draft:'Draf', submitted:'Dihantar', approved:'Diluluskan', rejected:'Ditolak', live:'Live', taken_down:'Ditarik balik', pending:'Menunggu kelulusan', suspended:'Digantung' };
 
-let S = null;
-const UI = { tab:'releases', editing:null };
-const save = () => Store.save(S);
-const artistById = id => S.artists.find(a => a.id === id);
-const byId = id => S.videos.find(v => v.id === id);
-const vis = v => v.privacy === 'Awam' && !v.hidden && !v.removed;
+/* ================= Keadaan ================= */
+const ST = { dist:null, artists:[], releases:[], channels:{}, videos:[], keys:[], personal:[], admin:{ dists:[], releases:[] } };
+const UI = { tab:null, editing:null, editCo:false, newKey:null, ap:{ field:null, items:[], idx:-1 }, merge:null, ach:null };
+const curRel = () => ST.releases.find(r => r.id === UI.editing);
+const approved = () => !!ST.dist && ST.dist.status === 'approved';
+const isAdmin = () => !!(RV.profile && RV.profile.is_admin);
+const artistOf = id => ST.artists.find(a => a.id === id);
+const editable = r => ['draft', 'rejected'].includes(r.status);
+const typeName = t => (RTYPES.find(x => x[0] === t) || [, t])[1];
+const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 const F = (label, html, cls = '') => `<label class="f ${cls}"><span>${label}</span>${html}</label>`;
 const opts = (list, cur) => list.map(([v, l]) => `<option value="${v}" ${v === cur ? 'selected' : ''}>${esc(l)}</option>`).join('');
-const curRel = () => S.releases.find(r => r.id === UI.editing);
-const editable = r => ['draft', 'rejected'].includes(r.status);
-const setStatus = (r, s) => { r.status = s; r.log.push({ s, t:Date.now() }); save(); };
-const typeName = t => (RTYPES.find(x => x[0] === t) || [, t])[1];
-const artistNames = ids => ids.map(i => (artistById(i) || {}).name).filter(Boolean).join(', ');
-function setTheme(t) { document.documentElement.dataset.theme = t; S.me.prefs.theme = t; $('#themeBtn').innerHTML = ic(t === 'dark' ? 'sun' : 'moon'); save(); }
+const avatarOf = (ch, name) => ch && ch.avatar ? `<img src="${esc(ch.avatar)}" alt="">` : esc((name || '?')[0].toUpperCase());
 
-const newTrack = () => ({ id:'t' + uid(), title:'', version:'', isrc:'', explicit:'not_explicit', audioUrl:'', audioName:'', format:'', rate:0, depth:0, dur:0,
-  composer:'', lyricist:'', producer:'', publisher:'', mvType:'official_music_video', videos:[] });
-const newRelease = () => ({ id:'r' + uid(), title:'', version:'', type:'single', primary:S.artists[0] ? [S.artists[0].id] : [], featured:[], label:S.dist.name,
-  genre:'', language:'ms', origDate:'', relDate:'', p:'', c:'', upc:'', territories:['WW'], explicit:'not_explicit', cover:null, status:'draft', rejection:'',
-  log:[{ s:'draft', t:Date.now() }], tracks:[newTrack()] });
+/* ================= Muat data ================= */
+const mapArtist = a => ({ id:a.id, name:a.name, channelId:a.channel_id, country:a.country, bio:a.bio || '' });
+const mapTrack = t => ({ id:t.id, title:t.title || '', version:t.version_title || '', isrc:t.isrc || '', explicit:t.explicit, audioPath:t.audio_path, audioName:t.audio_name || '',
+  format:t.audio_format || '', rate:t.sample_rate || 0, depth:t.bit_depth || 0, dur:+t.duration_s || 0, composer:t.composer || '', lyricist:t.lyricist || '',
+  producer:t.producer || '', publisher:t.publisher || '', mvType:'official_music_video' });
+function mapRelease(r, trs, ras) {
+  const ra = role => ras.filter(x => x.release_id === r.id && x.role === role).sort((a, b) => a.position - b.position).map(x => x.artist_id);
+  return { id:r.id, title:r.title || '', version:r.version_title || '', type:r.type, label:r.label_name || '', genre:r.genre || '', language:r.language || 'ms',
+    origDate:r.original_release_date || '', relDate:r.release_date || '', p:r.p_line || '', c:r.c_line || '', upc:r.upc || '', territories:r.territories || ['WW'], explicit:r.explicit,
+    coverPath:r.cover_path, cover:r.cover_path ? { w:r.cover_w || 0, h:r.cover_h || 0, name:'Gambar muka depan' } : null,
+    status:r.status, rejection:r.rejection_reason || '', ts:{ created:r.created_at, submitted:r.submitted_at, approved:r.approved_at, live:r.live_at, taken:r.taken_down_at },
+    primary:ra('primary'), featured:ra('featured'), tracks:trs.filter(t => t.release_id === r.id).sort((a, b) => a.position - b.position).map(mapTrack) };
+}
+async function loadStudio() {
+  ST.dist = null; ST.artists = []; ST.releases = []; ST.videos = []; ST.keys = []; ST.personal = [];
+  if (!RV.user) return;
+  const [mem, mine] = await Promise.all([
+    must(sb.from('distributor_members').select('distributor_id').eq('user_id', RV.user.id)),
+    must(sb.from('channels').select('*').eq('owner_id', RV.user.id))
+  ]);
+  mine.forEach(c => { ST.channels[c.id] = mapChannel(c); });
+  ST.personal = mine.filter(c => c.kind === 'personal' && !c.is_artist).map(c => c.id);
+  if (mem.length) ST.dist = await must(sb.from('distributors').select('*').eq('id', mem[0].distributor_id).maybeSingle());
+  if (approved()) await loadCatalog();
+  if (isAdmin()) await loadAdmin();
+}
+async function loadCatalog() {
+  const d = ST.dist.id;
+  const [arts, rels, keys] = await Promise.all([
+    must(sb.from('artists').select('*').eq('distributor_id', d).order('name')),
+    must(sb.from('releases').select('*').eq('distributor_id', d).order('created_at', { ascending:false })),
+    must(sb.from('api_keys').select('*').eq('distributor_id', d).order('created_at', { ascending:false }))
+  ]);
+  ST.artists = arts.map(mapArtist); ST.keys = keys.filter(k => !k.revoked_at);
+  const ids = rels.map(r => r.id); let trs = [], ras = [], vids = [];
+  if (ids.length) [trs, ras, vids] = await Promise.all([
+    must(sb.from('tracks').select('*').in('release_id', ids)), must(sb.from('release_artists').select('*').in('release_id', ids)), must(sb.from('videos').select('*').in('release_id', ids))]);
+  const chIds = [...new Set(arts.map(a => a.channel_id).filter(Boolean))];
+  if (chIds.length) (await must(sb.from('channels').select('*').in('id', chIds))).forEach(c => { ST.channels[c.id] = mapChannel(c); });
+  ST.videos = vids.map(mapVideo); ST.releases = rels.map(r => mapRelease(r, trs, ras));
+}
+async function loadAdmin() {
+  const [dists, rels] = await Promise.all([
+    must(sb.from('distributors').select('*').order('created_at', { ascending:false })),
+    must(sb.from('releases').select('id,title,status,distributor_id,created_at').in('status', ['submitted', 'approved']).order('created_at', { ascending:false }))]);
+  ST.admin = { dists, releases:rels };
+}
+async function reload(rerender = true) { try { await loadStudio(); } catch (e) { toast(friendly(e)); } if (rerender) render(); }
+
+/* ================= Tapak ================= */
+function tabsList() {
+  const t = [];
+  if (approved()) t.push(['releases', 'Release'], ['artists', 'Artis'], ['catalog', 'Katalog']);
+  t.push(['company', 'Syarikat']);
+  if (approved()) t.push(['api', 'API']);
+  if (isAdmin()) t.push(['admin', 'Admin']);
+  return t;
+}
+function render() {
+  const m = $('#main');
+  if (!CONFIGURED || !sb) { m.innerHTML = RV.setupHTML(); return; }
+  if (!RV.user) { m.innerHTML = landingHTML(); return; }
+  if (UI.editing && curRel() && approved()) return renderEditor();
+  UI.editing = null;
+  const tabs = tabsList();
+  if (!UI.tab || !tabs.some(t => t[0] === UI.tab)) UI.tab = tabs[0][0];
+  m.innerHTML = `<h1 class="ph">Rocvid Music Studio</h1>
+    <p class="muted">${ST.dist ? `${esc(ST.dist.name)} <span class="status ${ST.dist.status}">${STATUS_LABEL[ST.dist.status]}</span>` : 'Daftarkan syarikat pengedar anda untuk bermula.'}</p>
+    <div class="tabs" role="tablist">${tabs.map(([id, l]) => `<button role="tab" aria-selected="${UI.tab === id}" data-tab="${id}">${l}</button>`).join('')}</div><div id="stBody"></div>`;
+  ({ releases:tabReleases, artists:tabArtists, catalog:tabCatalog, company:tabCompany, api:tabApi, admin:tabAdmin }[UI.tab])();
+}
+function landingHTML() {
+  return `<div class="landing">${BADGE}<h1>Hantar muzik anda ke Rocvid</h1>
+    <p>Rocvid Music Studio untuk syarikat pengedar muzik. Log masuk, daftarkan syarikat anda, kemudian hantar release, lagu dan video muzik.</p>
+    <ul><li>${ic('check')}<span>Daftar syarikat dan dapatkan kelulusan</span></li><li>${ic('check')}<span>Hantar release dengan semakan syarat automatik</span></li>
+      <li>${ic('check')}<span>Setiap artis mendapat saluran berlencana, atau gabungkan dengan saluran biasa</span></li></ul>
+    <button class="btn gbtn sun" data-auth="login">${GOOGLE}<span>Log masuk dengan Google</span></button></div>`;
+}
+function menuExtra() {
+  return `<a href="${esc(CFG.siteUrl)}">${ic('home')}<span>Kembali ke Rocvid</span></a>` + (ST.dist ? `<button data-tab="company">${ic('building')}<span>${esc(ST.dist.name)}</span></button>` : '');
+}
+
+/* ---------- Syarikat (daftar, paparkan, edit) ---------- */
+function coFields(d = {}) {
+  const v = k => esc(d[k] || '');
+  return `<div class="fgrid">
+    ${F('Nama syarikat (nama perniagaan)', `<input id="coName" maxlength="120" value="${v('name')}">`)}
+    ${F('Nama berdaftar (seperti dalam sijil)', `<input id="coLegal" maxlength="160" value="${v('legal_name')}">`)}
+    ${F('No. pendaftaran syarikat', `<input id="coReg" maxlength="40" placeholder="cth. SSM 202401012345" value="${v('registration_no')}">`)}
+    ${F('Negara', `<select id="coCountry">${opts(COUNTRIES, d.country || 'MY')}</select>`)}
+    ${F('Alamat', `<textarea id="coAddr" rows="2" maxlength="300">${v('address')}</textarea>`, 'full')}
+    ${F('Bandar', `<input id="coCity" maxlength="80" value="${v('city')}">`)}
+    ${F('Poskod', `<input id="coPost" maxlength="12" value="${v('postcode')}">`)}
+    ${F('Nama wakil', `<input id="coPerson" maxlength="80" value="${esc(d.contact_person || RV.name)}">`)}
+    ${F('Jawatan (pilihan)', `<input id="coRole" maxlength="60" value="${v('contact_role')}">`)}
+    ${F('Emel perhubungan', `<input id="coEmail" type="email" maxlength="120" value="${esc(d.contact_email || RV.user.email || '')}">`)}
+    ${F('Telefon', `<input id="coPhone" maxlength="30" placeholder="+60..." value="${v('phone')}">`)}
+    ${F('Laman web (pilihan)', `<input id="coWeb" maxlength="120" placeholder="https://" value="${v('website')}">`, 'full')}</div>`;
+}
+const coPayload = () => ({ name:$('#coName').value, legal_name:$('#coLegal').value, registration_no:$('#coReg').value, country:$('#coCountry').value, address:$('#coAddr').value,
+  city:$('#coCity').value, postcode:$('#coPost').value, contact_person:$('#coPerson').value, contact_role:$('#coRole').value, contact_email:$('#coEmail').value, phone:$('#coPhone').value, website:$('#coWeb').value });
+function tabCompany() {
+  const d = ST.dist, el = $('#stBody');
+  if (!d || UI.editCo) {
+    el.innerHTML = `<section class="sec"><h3>${d ? 'Edit maklumat syarikat' : 'Daftar syarikat pengedar'}</h3>
+      ${d ? '<div class="note info">Menukar nama berdaftar atau no. pendaftaran memerlukan semakan semula oleh Rocvid.</div>' : '<div class="note info">Isi maklumat syarikat anda. Pasukan Rocvid akan menyemak sebelum anda boleh menghantar release.</div>'}
+      <form id="coForm" novalidate>${coFields(d || {})}
+      ${d ? '' : `<label class="chk" style="margin-top:14px"><input type="checkbox" id="coAgree"><span>Saya mewakili syarikat ini dan bersetuju dengan perjanjian pengedar Rocvid (hak muat naik, pematuhan hak cipta, tarik balik kandungan).</span></label>`}
+      <p class="err" id="coErr" role="alert"></p>
+      <div class="actions"><button class="btn primary" type="submit" id="coGo">${d ? 'Simpan perubahan' : 'Hantar pendaftaran'}</button>${d ? '<button class="btn" type="button" data-coedit="0">Batal</button>' : ''}</div></form></section>`;
+    return;
+  }
+  const row = (k, v) => v ? `<dt>${k}</dt><dd>${esc(v)}</dd>` : '';
+  el.innerHTML = `<section class="sec"><div class="cathead"><h3>${esc(d.name)}</h3><span class="status ${d.status}">${STATUS_LABEL[d.status]}</span></div>
+    ${d.status === 'pending' ? '<div class="note info">Pendaftaran anda sedang disemak oleh pasukan Rocvid. Anda akan boleh menghantar release selepas diluluskan.</div>' : ''}
+    ${d.status === 'suspended' ? '<div class="note bad">Akaun pengedar ini digantung. Hubungi sokongan Rocvid.</div>' : ''}
+    <dl class="cogrid">${row('Nama berdaftar', d.legal_name)}${row('No. pendaftaran', d.registration_no)}${row('Negara', (COUNTRIES.find(c => c[0] === d.country) || [, d.country])[1])}
+      ${row('Alamat', [d.address, d.postcode, d.city].filter(Boolean).join(', '))}${row('Wakil', d.contact_person + (d.contact_role ? ` (${d.contact_role})` : ''))}
+      ${row('Emel', d.contact_email)}${row('Telefon', d.phone)}${row('Laman web', d.website)}${row('Didaftar', new Date(d.created_at).toLocaleDateString('ms-MY'))}</dl>
+    <div class="actions" style="margin-top:16px"><button class="btn" data-coedit="1">${ic('edit')}<span>Edit maklumat</span></button></div></section>`;
+}
+
+/* ---------- Release ---------- */
+function newMetaStats() {
+  const L = ST.releases;
+  return { live:L.filter(r => r.status === 'live').length, tracks:L.reduce((n, r) => n + r.tracks.length, 0), pend:L.filter(r => r.status === 'submitted').length };
+}
+function tabReleases() {
+  const L = ST.releases, s = newMetaStats();
+  $('#stBody').innerHTML = `<div class="stats"><div><b>${s.live}</b><span>Release live</span></div><div><b>${s.tracks}</b><span>Lagu</span></div><div><b>${ST.artists.length}</b><span>Artis</span></div><div><b>${s.pend}</b><span>Menunggu semakan</span></div></div>
+    <div class="actions"><button class="btn primary" data-newrel>${ic('plus')}<span>Release baharu</span></button></div>` +
+    (L.length ? `<div class="rlist">${L.map(r => `<article class="rrow" tabindex="0" role="button" data-openrel="${r.id}">
+      <div class="rcov" style="--g:${grad(r.id)}">${r.cover ? `<img src="${esc(urlOf(r.coverPath))}" alt="">` : ''}</div>
+      <div class="rinfo"><h3>${esc(r.title || 'Tanpa tajuk')}${r.version ? ` (${esc(r.version)})` : ''}</h3>
+        <p class="ch">${esc(r.primary.map(i => (artistOf(i) || {}).name).filter(Boolean).join(', ') || 'Tiada artis')}</p>
+        <p class="st"><span>${typeName(r.type).split(' (')[0]}</span><span>${r.tracks.length} lagu</span>${r.upc ? `<span>UPC ${esc(r.upc)}</span>` : ''}</p></div>
+      <span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></article>`).join('')}</div>`
+    : '<div class="empty"><h2>Belum ada release</h2><p>Daftar artis, kemudian cipta release pertama anda.</p></div>');
+}
+
+/* ---------- Artis ---------- */
+function tabArtists() {
+  const mergeOpts = ST.personal.map(id => `<option value="${id}">${esc(ST.channels[id].name)}</option>`).join('');
+  $('#stBody').innerHTML = `<div class="badgebox">${BADGE}<div><strong>Lencana Artis Rocvid</strong><p>Setiap artis mendapat saluran dengan lencana ini. Anda juga boleh menggabungkan artis dengan saluran biasa; muzik dan video diterbitkan di saluran yang digabung.</p></div></div>
+    <div class="two-col"><section class="sec"><h3>Daftar artis</h3><form id="artForm" novalidate><div style="display:grid;gap:14px">
+      ${F('Nama artis', '<input id="aName" maxlength="80" autocomplete="off">')}
+      ${F('Negara', `<select id="aCountry">${opts(COUNTRIES, 'MY')}</select>`)}
+      ${F('Bio (pilihan)', '<textarea id="aBio" rows="3" maxlength="500"></textarea>')}
+      ${F('Saluran', `<select id="aMerge"><option value="">Cipta saluran artis baharu</option>${mergeOpts ? `<optgroup label="Gabung dengan saluran biasa saya">${mergeOpts}</optgroup>` : ''}</select><small>${ST.personal.length ? 'Pilih saluran biasa anda untuk menerbitkan muzik terus di situ.' : 'Anda belum mempunyai saluran biasa. Cipta di Rocvid jika mahu menggabungkan.'}</small>`)}
+      </div><p class="err" id="aErr" role="alert"></p><div class="actions" style="margin-top:12px"><button class="btn primary" type="submit" id="aGo">Daftar artis</button></div></form></section>
+    <div class="alist">${ST.artists.length ? ST.artists.map(a => { const ch = ST.channels[a.channelId], merged = ch && ch.kind === 'personal'; return `<div class="arow">
+      <div class="av" style="--g:${grad(a.id)}">${avatarOf(ch, a.name)}</div>
+      <div><strong>${esc(a.name)}${ch ? chBadge(ch) || BADGE : ''}</strong>
+        <p class="st"><span>${ch ? '@' + esc(ch.handle) : 'Tiada saluran'}</span><span>${ST.releases.filter(r => r.primary.includes(a.id)).length} release</span>${merged ? '<span>Digabung dengan saluran biasa</span>' : ''}</p></div>
+      <div class="acts">${ch ? `<a class="btn sm" href="${esc(CFG.siteUrl)}#/channel/${esc(ch.handle)}">Buka</a><button class="btn sm" data-ach="${a.id}">${ic('edit')}<span>Gambar dan bio</span></button>` : ''}
+        ${merged ? `<button class="btn sm" data-unmerge="${a.id}">Pisahkan</button>` : `<button class="btn sm" data-merge="${a.id}">${ic('link')}<span>Gabung</span></button>`}</div></div>`; }).join('')
+      : '<div class="empty"><h2>Belum ada artis</h2><p>Daftar artis pertama anda di sebelah.</p></div>'}</div></div>`;
+}
+async function createArtist(name, country, bio, mergeCh) {
+  const row = await must(sb.rpc('create_artist', { p_distributor:ST.dist.id, p_name:name, p_country:country || null, p_bio:bio || null, p_merge_channel:mergeCh || null }));
+  const a = mapArtist(Array.isArray(row) ? row[0] : row);
+  const ch = await must(sb.from('channels').select('*').eq('id', a.channelId).maybeSingle());
+  if (ch) ST.channels[ch.id] = mapChannel(ch);
+  ST.artists.push(a); ST.artists.sort((x, y) => x.name.localeCompare(y.name));
+  if (mergeCh) ST.personal = ST.personal.filter(i => i !== mergeCh);
+  return a;
+}
+
+/* ---------- Katalog ---------- */
+function mediaChips(r, t) {
+  const vs = ST.videos.filter(v => v.trackId === t.id);
+  return vs.map(v => {
+    const lab = v.type === 'audio_track' ? 'Audio' : MV_LABEL[v.type];
+    return v.status === 'ready' ? `<a class="chip" href="${esc(CFG.siteUrl)}#/watch/${v.id}">${ic('play')}${lab}</a>` : `<span class="chip dim2">${lab}${v.status === 'hidden' ? ' (belum terbit)' : ''}</span>`;
+  }).join('') || '<span class="muted">Belum ada media</span>';
+}
+function tabCatalog() {
+  const arts = ST.artists.map(a => { const ch = ST.channels[a.channelId]; return ch ? `<a class="btn sm" href="${esc(CFG.siteUrl)}#/channel/${esc(ch.handle)}">${esc(ch.name)}${chBadge(ch) || BADGE}</a>` : ''; }).join(' ');
+  $('#stBody').innerHTML = `<p class="muted" style="margin-bottom:14px;max-width:72ch">Audio dan video muzik bagi setiap lagu digabungkan dalam satu saluran. Pratonton saluran: ${arts || 'belum ada'}</p>` +
+    (ST.releases.length ? ST.releases.map(r => `<section class="sec"><div class="cathead"><h3>${esc(r.title || 'Tanpa tajuk')}</h3><span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></div>
+      ${r.tracks.map((t, i) => `<div class="catrow"><span class="cn">${i + 1}</span><div class="ct"><strong>${esc(t.title || 'Tanpa tajuk')}</strong><span class="muted">${esc(t.isrc || 'Tiada ISRC')}</span></div><div class="media">${mediaChips(r, t)}</div></div>`).join('')}</section>`).join('')
+    : '<div class="empty"><h2>Katalog kosong</h2><p>Lagu dan video muzik akan dipaparkan di sini.</p></div>');
+}
+
+/* ---------- API ---------- */
+function tabApi() {
+  const nk = UI.newKey; UI.newKey = null;
+  const ex = `curl -X POST ${CFG.supabaseUrl}/functions/v1/artists \\\n  -H "Authorization: Bearer rvm_live_..." \\\n  -H "Idempotency-Key: $(uuidgen)" \\\n  -H "Content-Type: application/json" \\\n  -d '{"name":"Nama Artis","country":"MY"}'`;
+  $('#stBody').innerHTML = `<section class="sec"><h3>Kunci API</h3>
+    <p class="muted" style="max-width:70ch">Kunci penuh hanya dipaparkan sekali; pangkalan data menyimpan hash sahaja. Titik akhir API (Supabase Edge Function) belum diaktifkan, jadi kunci ini disediakan untuk fasa itu.</p>
+    ${nk ? `<div class="keybox"><code>${esc(nk)}</code></div>` : ''}
+    <div class="actions" style="margin-top:12px"><button class="btn primary" data-makekey>${ic('plus')}<span>Cipta kunci baharu</span></button></div>
+    ${ST.keys.length ? `<div class="alist">${ST.keys.map(k => `<div class="arow"><div><code>${esc(k.key_prefix)}...</code><p class="st"><span>${esc(k.name)}</span><span>Dicipta ${ago(Date.parse(k.created_at))}</span></p></div><button class="btn sm danger" data-revoke="${k.id}">Batalkan</button></div>`).join('')}</div>` : '<p class="muted">Belum ada kunci.</p>'}</section>
+    <section class="sec"><h3>Aliran penghantaran</h3><div class="flow">
+      <span><code>POST /artists</code> daftar artis dan cipta saluran berlencana</span><span><code>POST /uploads</code> URL muat naik audio, gambar dan video</span>
+      <span><code>POST /releases</code> dan <code>POST /releases/{id}/tracks</code> cipta release dan lagu</span><span><code>POST /videos</code> pautkan video muzik ke lagu</span>
+      <span><code>GET /releases/{id}/validation</code> kemudian <code>POST /releases/{id}/submit</code></span></div>
+    <pre><code>${esc(ex)}</code></pre><p class="muted">Spesifikasi penuh: rocvid_music_api.yaml</p></section>`;
+}
+
+/* ---------- Admin ---------- */
+function tabAdmin() {
+  const A = ST.admin, dn = id => (A.dists.find(d => d.id === id) || {}).name || '?';
+  $('#stBody').innerHTML = `<section class="sec"><h3>Syarikat pengedar</h3><div class="alist">${A.dists.map(d => `<div class="arow"><div><strong>${esc(d.name)}</strong>
+    <p class="st"><span>${esc(d.legal_name)}</span><span>${esc(d.registration_no)}</span><span>${esc(d.contact_email)}</span></p></div><span class="status ${d.status}">${STATUS_LABEL[d.status]}</span>
+    <div class="acts">${d.status !== 'approved' ? `<button class="btn sm primary" data-dstat="${d.id}:approved">Luluskan</button>` : ''}${d.status !== 'suspended' ? `<button class="btn sm danger" data-dstat="${d.id}:suspended">Gantung</button>` : ''}</div></div>`).join('') || '<p class="muted">Tiada syarikat.</p>'}</div></section>
+    <section class="sec"><h3>Release menunggu tindakan</h3><div class="alist">${A.releases.map(r => `<div class="arow"><div><strong>${esc(r.title || 'Tanpa tajuk')}</strong><p class="st"><span>${esc(dn(r.distributor_id))}</span></p></div>
+    <span class="status ${r.status}">${STATUS_LABEL[r.status]}</span><div class="acts">
+      ${r.status === 'submitted' ? `<button class="btn sm primary" data-radm="${r.id}:approve">Luluskan</button><button class="btn sm danger" data-radm="${r.id}:reject">Tolak</button>` : `<button class="btn sm sun" data-radm="${r.id}:publish">Terbitkan</button>`}</div></div>`).join('') || '<p class="muted">Tiada release menunggu.</p>'}</div></section>`;
+}
+
+/* ================= Editor release ================= */
+const saveTimers = {};
+const setSave = t => { const e = $('#saveSt'); if (e) e.textContent = t; };
+function queueSave(key, fn) {
+  clearTimeout(saveTimers[key]); setSave('Menyimpan…');
+  saveTimers[key] = setTimeout(async () => { try { await fn(); setSave('Disimpan'); } catch (e) { setSave('Gagal menyimpan'); toast(friendly(e)); } }, 700);
+}
+const relRow = r => ({ title:r.title, version_title:r.version || null, type:r.type, label_name:r.label || null, genre:r.genre || null, language:r.language || null,
+  original_release_date:r.origDate || null, release_date:r.relDate || null, p_line:r.p || null, c_line:r.c || null, upc:r.upc || null, territories:r.territories, explicit:r.explicit,
+  cover_path:r.coverPath || null, cover_w:r.cover ? r.cover.w : null, cover_h:r.cover ? r.cover.h : null });
+const trkRow = (t, i) => ({ position:i + 1, title:t.title, version_title:t.version || null, isrc:t.isrc || null, explicit:t.explicit, audio_path:t.audioPath || null, audio_name:t.audioName || null,
+  audio_format:t.format || null, sample_rate:t.rate || null, bit_depth:t.depth || null, duration_s:t.dur || null, composer:t.composer, lyricist:t.lyricist, producer:t.producer, publisher:t.publisher });
+async function saveRelease(r) {
+  const rows = await must(sb.from('releases').update(relRow(r)).eq('id', r.id).select('id'));
+  if (!rows || !rows.length) throw new Error('Tidak dapat menyimpan. Release mungkin sudah dihantar.');
+}
+async function saveTrack(r, t) {
+  const rows = await must(sb.from('tracks').update(trkRow(t, r.tracks.indexOf(t))).eq('id', t.id).select('id'));
+  if (!rows || !rows.length) throw new Error('Tidak dapat menyimpan lagu.');
+}
+async function syncArtists(r) {
+  await must(sb.from('release_artists').delete().eq('release_id', r.id));
+  const rows = [...r.primary.map((id, i) => ({ release_id:r.id, artist_id:id, role:'primary', position:i + 1 })), ...r.featured.map((id, i) => ({ release_id:r.id, artist_id:id, role:'featured', position:i + 1 }))];
+  if (rows.length) await must(sb.from('release_artists').insert(rows));
+}
 
 /* Peraturan yang sama dengan release_validation() dalam pangkalan data */
 function validate(rel) {
   const E = []; let total = 0;
-  const ck = (ok, code, msg, tid = null) => { total++; if (!ok) E.push({ code, msg, tid }); };
+  const ck = (ok, code, msg) => { total++; if (!ok) E.push({ code, msg }); };
   const line = /^(19|20)[0-9]{2} .+/;
   ck(!!rel.title.trim(), 'TITLE_REQUIRED', 'Tajuk release diperlukan');
   ck(/^[0-9]{12,13}$/.test(rel.upc), 'UPC_REQUIRED', 'UPC/EAN (12-13 digit) diperlukan');
-  ck(!rel.upc || !S.releases.some(r => r.id !== rel.id && r.upc === rel.upc), 'UPC_DUPLICATE', 'UPC ini sudah digunakan oleh release lain');
   ck(!!rel.label.trim(), 'LABEL_REQUIRED', 'Nama label diperlukan');
   ck(!!rel.genre, 'GENRE_REQUIRED', 'Genre diperlukan');
   ck(!!rel.language, 'LANGUAGE_REQUIRED', 'Bahasa diperlukan');
@@ -358,125 +510,78 @@ function validate(rel) {
   ck(line.test(rel.p), 'P_LINE_INVALID', 'P-line mesti berformat "TAHUN Pemilik", cth. 2026 Nama Label');
   ck(line.test(rel.c), 'C_LINE_INVALID', 'C-line mesti berformat "TAHUN Pemilik", cth. 2026 Nama Pemilik');
   const c = rel.cover;
-  ck(!!c, 'COVER_REQUIRED', 'Gambar muka depan diperlukan');
+  ck(!!rel.coverPath, 'COVER_REQUIRED', 'Gambar muka depan diperlukan');
   if (c) { ck(c.w === c.h, 'COVER_NOT_SQUARE', 'Gambar muka depan mesti segi empat sama'); ck(c.w >= 3000, 'COVER_TOO_SMALL', 'Gambar muka depan mesti sekurang-kurangnya 3000 x 3000 piksel'); }
   ck(rel.primary.length > 0, 'PRIMARY_ARTIST_REQUIRED', 'Sekurang-kurangnya satu artis utama diperlukan');
   ck(rel.territories.length > 0, 'TERRITORY_REQUIRED', 'Pilih sekurang-kurangnya satu wilayah');
   const n = rel.tracks.length;
-  ck(n > 0 && !((rel.type === 'single' && n > 3) || (rel.type === 'ep' && (n < 4 || n > 6)) || (rel.type === 'album' && n < 7)),
-    'TRACK_COUNT_MISMATCH', `Jenis ${typeName(rel.type)} tidak sesuai dengan ${n} lagu`);
+  ck(n > 0 && !((rel.type === 'single' && n > 3) || (rel.type === 'ep' && (n < 4 || n > 6)) || (rel.type === 'album' && n < 7)), 'TRACK_COUNT_MISMATCH', `Jenis ${typeName(rel.type)} tidak sesuai dengan ${n} lagu`);
   rel.tracks.forEach((t, i) => {
     const L = `Lagu ${i + 1}`;
-    ck(!!t.title.trim(), 'TRACK_TITLE_REQUIRED', `${L}: tajuk diperlukan`, t.id);
-    ck(/^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$/.test(t.isrc), 'TRACK_ISRC_REQUIRED', `${L}: ISRC sah diperlukan (12 aksara, cth. MYABC2600001)`, t.id);
-    ck(!t.isrc || (!S.releases.some(r => r.id !== rel.id && r.tracks.some(x => x.isrc === t.isrc)) && !rel.tracks.some((x, j) => j < i && x.isrc === t.isrc)), 'TRACK_ISRC_DUPLICATE', `${L}: ISRC sudah digunakan`, t.id);
-    ck(!!t.audioUrl, 'TRACK_AUDIO_REQUIRED', `${L}: fail audio (WAV atau FLAC) diperlukan`, t.id);
-    if (t.audioUrl) {
-      ck(['wav', 'flac'].includes(t.format), 'TRACK_AUDIO_FORMAT', `${L}: format mesti WAV atau FLAC`, t.id);
-      ck(t.rate >= 44100 && t.depth >= 16, 'TRACK_AUDIO_QUALITY', `${L}: audio mesti sekurang-kurangnya 16-bit / 44.1 kHz${t.rate ? '' : ' (tidak dapat dikesan)'}`, t.id);
-      ck(t.dur > 0, 'TRACK_DURATION_REQUIRED', `${L}: tempoh tidak dapat dikesan`, t.id);
+    ck(!!t.title.trim(), 'TRACK_TITLE_REQUIRED', `${L}: tajuk diperlukan`);
+    ck(/^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$/.test(t.isrc), 'TRACK_ISRC_REQUIRED', `${L}: ISRC sah diperlukan (12 aksara, cth. MYABC2600001)`);
+    ck(!!t.audioPath, 'TRACK_AUDIO_REQUIRED', `${L}: fail audio (WAV atau FLAC) diperlukan`);
+    if (t.audioPath) {
+      ck(['wav', 'flac'].includes(t.format), 'TRACK_AUDIO_FORMAT', `${L}: format mesti WAV atau FLAC`);
+      ck(t.rate >= 44100 && t.depth >= 16, 'TRACK_AUDIO_QUALITY', `${L}: audio mesti sekurang-kurangnya 16-bit / 44.1 kHz${t.rate ? '' : ' (tidak dapat dikesan)'}`);
+      ck(t.dur > 0, 'TRACK_DURATION_REQUIRED', `${L}: tempoh tidak dapat dikesan`);
     }
-    ck(rel.primary.length > 0, 'TRACK_PRIMARY_ARTIST_REQUIRED', `${L}: artis utama diperlukan`, t.id);
-    ck(!!(t.composer.trim() || t.lyricist.trim()), 'TRACK_SONGWRITER_REQUIRED', `${L}: komposer atau penulis lirik diperlukan`, t.id);
+    ck(!!(t.composer.trim() || t.lyricist.trim()), 'TRACK_SONGWRITER_REQUIRED', `${L}: komposer atau penulis lirik diperlukan`);
   });
   return { errors:E, total };
 }
 
-function render() {
-  if (UI.editing && curRel()) return renderEditor();
-  UI.editing = null;
-  const tabs = [['releases', 'Release'], ['artists', 'Artis'], ['catalog', 'Katalog'], ['api', 'API']];
-  $('#main').innerHTML = `<div class="shead"><div><h1 class="ph">Rocvid Music Studio</h1>
-    <p class="muted">${esc(S.dist.name)} <span class="status approved">Pengedar diluluskan</span></p></div></div>
-    <div class="tabs" role="tablist">${tabs.map(([id, l]) => `<button role="tab" aria-selected="${UI.tab === id}" data-sa="tab:${id}">${l}</button>`).join('')}</div>
-    <div id="stBody"></div>`;
-  ({ releases:tabReleases, artists:tabArtists, catalog:tabCatalog, api:tabApi }[UI.tab])();
+function apHTML(rel, field) {
+  const ids = rel[field], label = field === 'primary' ? 'Artis utama' : 'Artis jemputan (pilihan)';
+  return `<div class="f full"><span>${label}</span><div class="ap" data-apf="${field}"><div class="apbox">${ids.map(id => { const a = artistOf(id), ch = a && ST.channels[a.channelId];
+    return `<span class="apchip">${esc(a ? a.name : '?')}${ch ? chBadge(ch) || BADGE : ''}<button type="button" data-aprm="${field}:${id}" aria-label="Buang ${esc(a ? a.name : '')}">${ic('x')}</button></span>`; }).join('')}
+    <input class="apin" data-apin="${field}" placeholder="${ids.length ? 'Tambah artis…' : 'Taip nama artis…'}" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="aplist-${field}"></div>
+    <ul class="aplist" id="aplist-${field}" role="listbox" hidden></ul></div></div>`;
+}
+function apRender() {
+  const { field, items, idx } = UI.ap; if (!field) return;
+  const list = $('#aplist-' + field), input = $(`[data-apin="${field}"]`); if (!list) return;
+  const q = input.value.trim();
+  list.innerHTML = items.length ? items.map((it, i) => {
+    if (it.kind === 'new') return `<li class="apitem new" role="option" data-api="${i}" aria-selected="${i === idx}">${ic('plus')}<span>Cipta artis baharu “${esc(it.name)}”</span></li>`;
+    const a = it.a, ch = ST.channels[a.channelId], nq = norm(q), p = nq ? norm(a.name).indexOf(nq) : -1;
+    const nm = p >= 0 ? `${esc(a.name.slice(0, p))}<mark>${esc(a.name.slice(p, p + q.length))}</mark>${esc(a.name.slice(p + q.length))}` : esc(a.name);
+    return `<li class="apitem" role="option" data-api="${i}" aria-selected="${i === idx}"><span class="av" style="--g:${grad(a.id)}">${avatarOf(ch, a.name)}</span><span>${nm}${ch ? chBadge(ch) || BADGE : ''}</span><small>${ST.releases.filter(r => r.primary.includes(a.id)).length} release</small></li>`;
+  }).join('') : `<li class="apempty">${q ? 'Tiada artis sepadan.' : 'Belum ada artis. Daftar di tab Artis.'}</li>`;
+  list.hidden = false; input.setAttribute('aria-expanded', 'true');
+}
+function apSuggest(field) {
+  const rel = curRel(), input = $(`[data-apin="${field}"]`), q = input.value.trim(), nq = norm(q);
+  const taken = [...rel.primary, ...rel.featured];
+  let L = ST.artists.filter(a => !taken.includes(a.id) && (!nq || norm(a.name).includes(nq)));
+  L.sort((a, b) => (norm(b.name).startsWith(nq) ? 1 : 0) - (norm(a.name).startsWith(nq) ? 1 : 0) || a.name.localeCompare(b.name));
+  const items = L.slice(0, 6).map(a => ({ kind:'artist', a }));
+  if (nq && !ST.artists.some(a => norm(a.name) === nq)) items.push({ kind:'new', name:q });
+  UI.ap = { field, items, idx:items.length ? 0 : -1 }; apRender();
+}
+function apClose() { $$('.aplist').forEach(l => { l.hidden = true; }); $$('.apin').forEach(i => i.setAttribute('aria-expanded', 'false')); UI.ap.field = null; }
+async function apPick(i) {
+  const { field, items } = UI.ap, it = items[i], rel = curRel(); if (!it || !rel) return;
+  try {
+    const art = it.kind === 'new' ? await createArtist(it.name, null, null, null) : it.a;
+    if (it.kind === 'new') toast(`Artis ${art.name} didaftarkan dengan saluran berlencana`);
+    rel[field].push(art.id); await syncArtists(rel);
+    $(`[data-apf="${field}"]`).parentElement.outerHTML = apHTML(rel, field); apClose(); refreshCheck();
+    const inp = $(`[data-apin="${field}"]`); if (inp) inp.focus();
+  } catch (e) { toast(friendly(e)); }
 }
 
-function tabReleases() {
-  const L = S.releases, live = L.filter(r => r.status === 'live').length, tracks = L.reduce((n, r) => n + r.tracks.length, 0), pend = L.filter(r => ['submitted', 'in_review'].includes(r.status)).length;
-  $('#stBody').innerHTML = `<div class="stats"><div><b>${live}</b><span>Release live</span></div><div><b>${tracks}</b><span>Lagu</span></div><div><b>${S.artists.length}</b><span>Artis</span></div><div><b>${pend}</b><span>Menunggu semakan</span></div></div>
-    <div class="actions"><button class="btn primary" data-sa="newRel">${ic('plus')}<span>Release baharu</span></button></div>` +
-    (L.length ? `<div class="rlist">${L.map(r => `<article class="rrow" tabindex="0" role="button" data-sa="openRel:${r.id}">
-      <div class="rcov" style="--g:${grad(r.id)}">${r.cover ? `<img src="${U(r.cover.url)}" alt="">` : ''}</div>
-      <div class="rinfo"><h3>${esc(r.title || 'Tanpa tajuk')}${r.version ? ` (${esc(r.version)})` : ''}</h3>
-        <p class="ch">${esc(artistNames(r.primary) || 'Tiada artis')}</p>
-        <p class="st"><span>${typeName(r.type).split(' (')[0]}</span><span>${r.tracks.length} lagu</span>${r.upc ? `<span>UPC ${esc(r.upc)}</span>` : ''}</p></div>
-      <span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></article>`).join('')}</div>`
-    : '<div class="empty"><h2>Belum ada release</h2><p>Daftar artis, kemudian cipta release pertama anda.</p></div>');
-}
-
-const chPrev = name => `<div class="av" style="--g:${grad('prev' + name)}">${esc((name.trim()[0] || '?').toUpperCase())}</div>
-  <div><strong>${name.trim() ? esc(name.trim()) : '<span class="muted">Nama artis</span>'}${BADGE}</strong>
-  <span class="muted">${name.trim() ? '@' + esc(slugify(name).slice(0, 40).replace(/-+$/, '')) + ' · ' : ''}Saluran artis rasmi</span></div>`;
-
-function tabArtists() {
-  $('#stBody').innerHTML = `<div class="badgebox">${BADGE}<div><strong>Lencana Artis Rocvid</strong><p>Setiap artis yang didaftarkan mendapat saluran sendiri dengan lencana ini, dipaparkan di sebelah nama pada saluran, video dan carian.</p></div></div>
-    <div class="two-col"><section class="sec"><h3>Daftar artis</h3>
-    <div style="display:grid;gap:14px">
-    ${F('Nama artis', '<input id="aName" maxlength="80" autocomplete="off">')}
-    ${F('Negara', `<select id="aCountry">${opts([['MY','Malaysia'],['SG','Singapura'],['ID','Indonesia'],['BN','Brunei'],['TH','Thailand'],['US','Amerika Syarikat'],['GB','United Kingdom']], 'MY')}</select>`)}
-    ${F('Bio (pilihan)', '<textarea id="aBio" rows="3" maxlength="500"></textarea>')}
-    </div>
-    <div class="chprev" id="chPrev">${chPrev('')}</div>
-    <p class="err" id="aErr" role="alert"></p>
-    <button class="btn primary" data-sa="addArtist">Daftar artis</button></section>
-    <div class="alist">${S.artists.map(a => `<div class="arow"><div class="av" style="--g:${grad('a:' + a.id)}">${esc(a.name[0].toUpperCase())}</div>
-      <div><strong>${esc(a.name)}${BADGE}</strong>
-      <p class="st"><span>@${esc(a.slug)}</span><span>${S.releases.filter(r => r.primary.includes(a.id)).length} release</span></p></div>
-      <a class="btn sm" href="index.html#/channel/a:${a.id}">Buka saluran</a></div>`).join('')}</div></div>`;
-}
-
-function mediaChips(t) {
-  return t.videos.map(m => {
-    const v = byId(m.id); if (!v) return '';
-    const lab = m.relation === 'audio_track' ? 'Audio' : MV_LABEL[m.relation];
-    return vis(v) ? `<a class="chip" href="index.html#/watch/${v.id}">${ic('play')}${lab}</a>` : `<span class="chip dim2">${lab}</span>`;
-  }).join('') || '<span class="muted">Belum ada media</span>';
-}
-function tabCatalog() {
-  const arts = S.artists.map(a => `<a class="btn sm" href="index.html#/channel/a:${a.id}">${esc(a.name)}${BADGE}</a>`).join(' ');
-  $('#stBody').innerHTML = `<p class="muted" style="margin-bottom:14px;max-width:72ch">Audio dan video muzik bagi setiap lagu digabungkan dalam satu saluran artis. Pratonton saluran: ${arts}</p>` +
-    (S.releases.length ? S.releases.map(r => `<section class="sec"><div class="cathead"><h3>${esc(r.title || 'Tanpa tajuk')}</h3><span class="status ${r.status}">${STATUS_LABEL[r.status]}</span></div>
-      ${r.tracks.map((t, i) => `<div class="catrow"><span class="cn">${i + 1}</span><div class="ct"><strong>${esc(t.title || 'Tanpa tajuk')}</strong><span class="muted">${esc(t.isrc || 'Tiada ISRC')}</span></div><div class="media">${mediaChips(t)}</div></div>`).join('')}</section>`).join('')
-    : '<div class="empty"><h2>Katalog kosong</h2><p>Lagu dan video muzik akan dipaparkan di sini.</p></div>');
-}
-
-function tabApi() {
-  const nk = UI.newKey; UI.newKey = null;
-  const base = 'https://api.rocvid.example/v1';
-  const ex = `curl -X POST ${base}/artists \\\n  -H "Authorization: Bearer rvm_live_..." \\\n  -H "Idempotency-Key: $(uuidgen)" \\\n  -H "Content-Type: application/json" \\\n  -d '{"name":"Nada Demo","country":"MY"}'`;
-  $('#stBody').innerHTML = `<section class="sec"><h3>Kunci API</h3>
-    <p class="muted" style="max-width:70ch">Gunakan kunci ini untuk menghantar release melalui API. Kunci penuh hanya dipaparkan sekali. Ini demo; kunci sebenar dijana oleh pelayan anda.</p>
-    ${nk ? `<div class="keybox"><code>${esc(nk)}</code></div>` : ''}
-    <div class="actions" style="margin-top:12px"><button class="btn primary" data-sa="makeKey">${ic('plus')}<span>Cipta kunci baharu</span></button></div>
-    ${S.keys.length ? `<div class="alist">${S.keys.map(k => `<div class="arow"><div><code>${esc(k.prefix)}...</code><p class="st"><span>Dicipta ${ago(k.t)}</span></p></div><button class="btn sm danger" data-sa="revokeKey:${k.id}">Batalkan</button></div>`).join('')}</div>` : '<p class="muted">Belum ada kunci.</p>'}
-  </section>
-  <section class="sec"><h3>Aliran penghantaran</h3>
-    <div class="flow">
-      <span><code>POST /artists</code> daftar artis dan cipta saluran artis berlencana</span>
-      <span><code>POST /uploads</code> dapatkan URL muat naik audio, gambar dan video</span>
-      <span><code>POST /releases</code> dan <code>POST /releases/{id}/tracks</code> cipta release dan lagu</span>
-      <span><code>POST /videos</code> pautkan video muzik ke lagu</span>
-      <span><code>GET /releases/{id}/validation</code> semak syarat, kemudian <code>POST /releases/{id}/submit</code></span>
-      <span>Webhook <code>release.status_changed</code> memberitahu perubahan status</span>
-    </div>
-    <pre><code>${esc(ex)}</code></pre>
-    <p class="muted">Spesifikasi penuh: rocvid_music_api.yaml</p></section>`;
-}
-
-/* ---------- Editor release ---------- */
 function coverHTML(rel) {
   const c = rel.cover, ok = c && c.w === c.h && c.w >= 3000;
-  return `<div class="covrow"><div class="covprev" style="--g:${grad(rel.id)}">${c ? `<img src="${U(c.url)}" alt="Pratonton muka depan">` : ''}</div>
-    <div><label class="drop" for="fCover"><span>${c ? esc(c.name) : 'Pilih gambar muka depan'}</span><small>JPG atau PNG, segi empat sama, sekurang-kurangnya 3000 x 3000 piksel.</small></label>
+  return `<div class="covrow"><div class="covprev" style="--g:${grad(rel.id)}">${rel.coverPath ? `<img src="${esc(urlOf(rel.coverPath))}" alt="Pratonton muka depan">` : ''}</div>
+    <div><label class="drop" for="fCover"><span>${rel.coverPath ? 'Tukar gambar muka depan' : 'Pilih gambar muka depan'}</span><small>JPG atau PNG, segi empat sama, sekurang-kurangnya 3000 x 3000 piksel.</small></label>
     <input class="sr" id="fCover" type="file" accept="image/jpeg,image/png" data-cover>
     ${c ? `<p class="dim ${ok ? 'ok' : 'bad'}">${ic(ok ? 'check' : 'x')}<span>${c.w} x ${c.h} piksel${ok ? '' : ', tidak memenuhi syarat'}</span></p>` : ''}</div></div>`;
 }
 function trackHTML(rel, t, i) {
-  const spec = t.audioName ? `${esc(t.audioName)}${t.rate ? `, ${(t.rate / 1000).toFixed(1).replace('.0', '')} kHz / ${t.depth}-bit` : ''}${t.dur ? `, ${fmt(t.dur)}` : ''}` : 'Pilih fail audio (WAV atau FLAC)';
-  const mv = t.videos.filter(x => x.relation !== 'audio_track'), tf = f => `data-tf="${t.id}:${f}"`;
-  return `<div class="tk"><div class="tkh"><strong>Lagu ${i + 1}</strong>${rel.tracks.length > 1 ? `<button class="btn ghost sm" data-sa="rmTrack:${t.id}" aria-label="Buang lagu ${i + 1}">${ic('trash')}</button>` : ''}</div>
+  const spec = t.audioPath ? `${esc(t.audioName || 'Fail audio')}${t.rate ? `, ${(t.rate / 1000).toFixed(1).replace('.0', '')} kHz / ${t.depth}-bit` : ''}${t.dur ? `, ${fmt(t.dur)}` : ''}` : 'Pilih fail audio (WAV atau FLAC)';
+  const mv = ST.videos.filter(v => v.trackId === t.id && v.type !== 'audio_track'), tf = f => `data-tf="${t.id}:${f}"`;
+  return `<div class="tk"><div class="tkh"><strong>Lagu ${i + 1}</strong>${rel.tracks.length > 1 ? `<button class="btn ghost sm" data-rmtrack="${t.id}" aria-label="Buang lagu ${i + 1}">${ic('trash')}</button>` : ''}</div>
     <div class="fgrid">
       ${F('Tajuk lagu', `<input ${tf('title')} maxlength="200" value="${esc(t.title)}">`)}
       ${F('Tajuk versi (pilihan)', `<input ${tf('version')} value="${esc(t.version)}">`)}
@@ -490,47 +595,43 @@ function trackHTML(rel, t, i) {
     <label class="drop sm" for="au-${t.id}"><span>${spec}</span><small>Audio tanpa mampatan, sekurang-kurangnya 16-bit / 44.1 kHz. Format dan kualiti dikesan daripada fail.</small></label>
     <input class="sr" id="au-${t.id}" type="file" accept=".wav,.flac,audio/wav,audio/flac" data-audio="${t.id}">
     <div class="mvbox"><strong>Video muzik untuk lagu ini</strong>
-      ${mv.map(m => { const v = byId(m.id); return `<div class="mvrow"><span>${esc(v ? v.title : 'Video')}</span><button class="btn ghost sm" data-sa="rmMv:${t.id}:${m.id}" aria-label="Buang video">${ic('trash')}</button></div>`; }).join('')}
+      ${mv.map(v => `<div class="mvrow"><span>${esc(v.title)} <span class="muted">${v.status === 'ready' ? 'terbit' : 'belum terbit'}</span></span><button class="btn ghost sm" data-rmmv="${v.id}" aria-label="Buang video">${ic('trash')}</button></div>`).join('')}
       <div class="mvadd"><select ${tf('mvType')} aria-label="Jenis video">${opts(MV_TYPES, t.mvType)}</select>
-        <label class="btn" for="mv-${t.id}">${ic('film')}<span>Tambah video</span></label>
-        <input class="sr" id="mv-${t.id}" type="file" accept="video/*" data-mv="${t.id}"></div>
-    </div></div>`;
+        <label class="btn" for="mv-${t.id}">${ic('film')}<span>Tambah video</span></label><input class="sr" id="mv-${t.id}" type="file" accept="video/*" data-mv="${t.id}"></div></div></div>`;
 }
 const tracksHTML = rel => rel.tracks.map((t, i) => trackHTML(rel, t, i)).join('');
-
+function relLog(rel) {
+  const L = [['draft', rel.ts.created], ['submitted', rel.ts.submitted], ['approved', rel.ts.approved], ['live', rel.ts.live], ['taken_down', rel.ts.taken]].filter(x => x[1]);
+  return L.reverse().map(([s, t]) => `<li><span class="status ${s}">${STATUS_LABEL[s]}</span><span class="muted">${ago(Date.parse(t))}</span></li>`).join('');
+}
 function panelHTML(rel) {
   const { errors, total } = validate(rel), pct = Math.round((total - errors.length) / total * 100);
-  let h = `<h3><span class="n">4</span>Semak dan hantar</h3>
-    <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><p class="pct">${pct}% syarat dipenuhi</p>`;
+  let h = `<h3><span class="n">4</span>Semak dan hantar</h3><div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><p class="pct">${pct}% syarat dipenuhi</p>`;
   h += errors.length ? `<ul class="errs">${errors.map(e => `<li>${ic('x')}<span>${esc(e.msg)}</span></li>`).join('')}</ul>` : `<p class="okmsg">${ic('check')}<span>Semua syarat dipenuhi.</span></p>`;
-  if (editable(rel)) h += `<button class="btn primary wide" data-sa="submit" ${errors.length ? 'disabled' : ''}>Hantar untuk semakan</button><button class="btn ghost wide" data-sa="delRel">Padam draf</button>`;
+  if (editable(rel)) h += `<button class="btn primary wide" data-act="submit" ${errors.length ? 'disabled' : ''}>Hantar untuk semakan</button><button class="btn ghost wide" data-act="delrel">Padam draf</button>`;
   else {
-    h += '<div class="demo"><p class="muted">Simulasi pasukan Rocvid (demo)</p>';
-    if (['submitted', 'in_review'].includes(rel.status)) h += '<button class="btn primary wide" data-sa="approve">Luluskan</button><button class="btn wide" data-sa="reject">Tolak</button>';
-    if (rel.status === 'approved') h += '<button class="btn primary wide" data-sa="publish">Terbitkan</button>';
-    if (['approved', 'live'].includes(rel.status)) h += '<button class="btn danger wide" data-sa="takedown">Tarik balik</button>';
-    if (rel.status === 'live') h += `<a class="btn sun wide" href="index.html#/channel/a:${rel.primary[0]}">Lihat di Rocvid</a>`;
+    h += '<div class="demo">';
+    if (rel.status === 'submitted') h += `<p class="muted">Menunggu semakan pasukan Rocvid.</p>`;
+    if (isAdmin() && rel.status === 'submitted') h += `<button class="btn primary wide" data-act="approve">Luluskan</button><input id="rejWhy" placeholder="Sebab penolakan (wajib jika tolak)"><button class="btn wide" data-act="reject">Tolak</button>`;
+    if (isAdmin() && rel.status === 'approved') h += `<button class="btn primary wide" data-act="publish">Terbitkan</button>`;
+    if (['approved', 'live'].includes(rel.status)) h += `<button class="btn danger wide" data-act="takedown">Tarik balik</button>`;
+    if (rel.status === 'live' && rel.primary[0]) { const a = artistOf(rel.primary[0]), ch = a && ST.channels[a.channelId]; if (ch) h += `<a class="btn sun wide" href="${esc(CFG.siteUrl)}#/channel/${esc(ch.handle)}">Lihat di Rocvid</a>`; }
     h += '</div>';
   }
-  h += `<ol class="log">${rel.log.slice().reverse().map(l => `<li><span class="status ${l.s}">${STATUS_LABEL[l.s]}</span><span class="muted">${ago(l.t)}</span></li>`).join('')}</ol>`;
-  return h;
+  return h + `<ol class="log">${relLog(rel)}</ol>`;
 }
-
 function renderEditor() {
-  const rel = curRel();
-  const artOpts = (cur, none) => (none ? '<option value="">Tiada</option>' : '') + S.artists.map(a => `<option value="${a.id}" ${a.id === cur ? 'selected' : ''}>${esc(a.name)}</option>`).join('');
-  const d = f => `data-f="${f}"`;
+  const rel = curRel(), d = f => `data-f="${f}"`;
   $('#main').innerHTML = `
-    <div class="edtop"><button class="btn ghost" data-sa="edBack">${ic('back')}<span>Semua release</span></button><span class="status ${rel.status}">${STATUS_LABEL[rel.status]}</span></div>
+    <div class="edtop"><button class="btn ghost" data-back>${ic('back')}<span>Semua release</span></button><span class="status ${rel.status}">${STATUS_LABEL[rel.status]}</span><span class="savest" id="saveSt" aria-live="polite"></span></div>
     <h1 class="ph" id="edTitle">${esc(rel.title || 'Release baharu')}</h1>
     ${rel.status === 'rejected' ? `<div class="note bad"><strong>Ditolak:</strong> ${esc(rel.rejection)}</div>` : ''}
     <div class="ed"><fieldset class="edmain" ${editable(rel) ? '' : 'disabled'}>
       <section class="sec"><h3><span class="n">1</span>Maklumat release</h3><div class="fgrid">
         ${F('Tajuk release', `<input ${d('title')} maxlength="200" value="${esc(rel.title)}">`)}
         ${F('Tajuk versi (pilihan)', `<input ${d('version')} placeholder="cth. Acoustic" value="${esc(rel.version)}">`)}
+        ${apHTML(rel, 'primary')}${apHTML(rel, 'featured')}
         ${F('Jenis', `<select ${d('type')}>${opts(RTYPES, rel.type)}</select>`)}
-        ${F('Artis utama', `<select ${d('primary')}>${artOpts(rel.primary[0])}</select>`)}
-        ${F('Artis jemputan (pilihan)', `<select ${d('featured')}>${artOpts(rel.featured[0], true)}</select>`)}
         ${F('Nama label', `<input ${d('label')} value="${esc(rel.label)}">`)}
         ${F('Genre', `<select ${d('genre')}><option value="">Pilih genre</option>${opts(GENRES.map(g => [g, g]), rel.genre)}</select>`)}
         ${F('Bahasa', `<select ${d('language')}>${opts(LANGS, rel.language)}</select>`)}
@@ -544,13 +645,12 @@ function renderEditor() {
       <div class="terr"><span class="lbl">Wilayah pengedaran</span>${TERRS.map(([k, l]) => `<label><input type="checkbox" data-terr="${k}" ${rel.territories.includes(k) ? 'checked' : ''}>${l}</label>`).join('')}</div></section>
       <section class="sec"><h3><span class="n">2</span>Gambar muka depan</h3><div id="coverBox">${coverHTML(rel)}</div></section>
       <section class="sec"><h3><span class="n">3</span>Lagu, kredit dan video muzik</h3><div id="tracksBox">${tracksHTML(rel)}</div>
-        <button class="btn" data-sa="addTrack">${ic('plus')}<span>Tambah lagu</span></button></section>
+        <button class="btn" data-addtrack>${ic('plus')}<span>Tambah lagu</span></button></section>
     </fieldset><aside class="chkp"><div id="chk">${panelHTML(rel)}</div></aside></div>`;
 }
 function refreshCheck() { const r = curRel(); if (r && $('#chk')) $('#chk').innerHTML = panelHTML(r); }
 function refreshTracks() { const r = curRel(); $('#tracksBox').innerHTML = tracksHTML(r); refreshCheck(); }
 
-/* Baca format, kadar sampel, kedalaman bit dan tempoh daripada fail audio */
 async function readAudio(f, url) {
   const ext = (f.name.split('.').pop() || '').toLowerCase(), out = { format:ext, rate:0, depth:0, dur:0 };
   try {
@@ -561,134 +661,210 @@ async function readAudio(f, url) {
       out.depth = (((b.getUint8(20) & 1) << 4) | (b.getUint8(21) >> 4)) + 1;
     }
   } catch (e) {}
-  out.dur = await new Promise(res => { const a = new Audio(); a.preload = 'metadata'; a.onloadedmetadata = () => res(isFinite(a.duration) ? a.duration : 0); a.onerror = () => res(0); a.src = url; });
+  out.dur = await mediaDuration(f, 'audio');
   return out;
 }
 async function onFile(el) {
   const rel = curRel(), f = el.files[0]; if (!rel || !f) return;
-  if (el.dataset.cover !== undefined) {
-    if (!f.type.startsWith('image/')) return toast('Pilih fail imej');
-    const ref = Store.putFile(f), im = new Image();
-    im.onload = () => { rel.cover = { url:ref, w:im.naturalWidth, h:im.naturalHeight, name:f.name }; save(); $('#coverBox').innerHTML = coverHTML(rel); refreshCheck(); };
-    im.onerror = () => toast('Imej tidak dapat dibaca');
-    im.src = U(ref);
-  } else if (el.dataset.audio) {
-    const t = rel.tracks.find(x => x.id === el.dataset.audio), ref = Store.putFile(f), a = await readAudio(f, U(ref));
-    Object.assign(t, { audioUrl:ref, audioName:f.name, format:a.format, rate:a.rate, depth:a.depth, dur:a.dur }); save(); refreshTracks();
-  } else if (el.dataset.mv) {
-    if (!f.type.startsWith('video/')) return toast('Pilih fail video');
-    const t = rel.tracks.find(x => x.id === el.dataset.mv), a = artistById(rel.primary[0]);
-    if (!a) return toast('Pilih artis utama dahulu');
-    const v = { id:'v' + uid(), type:t.mvType, title:`${t.title || 'Tanpa tajuk'} (${MV_LABEL[t.mvType]})`, desc:'', cat:'Muzik', channel:a.name, chKey:'a:' + a.id,
-      src:Store.putFile(f), views:0, likes:0, dislikes:0, t:Date.now(), privacy:'Awam', hidden:rel.status !== 'live', trackId:t.id, releaseId:rel.id, comments:[] };
-    S.videos.unshift(v); t.videos.push({ id:v.id, relation:t.mvType }); save();
-    refreshTracks(); toast('Video dipautkan. Ia tersedia selepas release diterbitkan.');
-  }
+  try {
+    if (el.dataset.cover !== undefined) {
+      if (!f.type.startsWith('image/')) return toast('Pilih fail imej');
+      setSave('Memuat naik…'); const [size, path] = await Promise.all([imageSize(f), uploadFile(f, 'covers')]);
+      rel.coverPath = path; rel.cover = { w:size.w, h:size.h, name:f.name }; await saveRelease(rel); setSave('Disimpan');
+      $('#coverBox').innerHTML = coverHTML(rel); refreshCheck();
+    } else if (el.dataset.audio) {
+      const t = rel.tracks.find(x => x.id === el.dataset.audio); setSave('Memuat naik audio…');
+      const [a, path] = await Promise.all([readAudio(f), uploadFile(f, 'audio')]);
+      Object.assign(t, { audioPath:path, audioName:f.name, format:a.format, rate:a.rate, depth:a.depth, dur:a.dur }); await saveTrack(rel, t); setSave('Disimpan'); refreshTracks();
+    } else if (el.dataset.mv) {
+      if (!f.type.startsWith('video/')) return toast('Pilih fail video');
+      const t = rel.tracks.find(x => x.id === el.dataset.mv), a = artistOf(rel.primary[0]);
+      if (!a || !a.channelId) return toast('Pilih artis utama dahulu');
+      setSave('Memuat naik video…');
+      const [path, dur] = await Promise.all([uploadFile(f, 'videos'), mediaDuration(f)]);
+      const row = await must(sb.from('videos').insert({ channel_id:a.channelId, uploader_id:RV.user.id, type:t.mvType, title:`${t.title || 'Tanpa tajuk'} (${MV_LABEL[t.mvType]})`,
+        description:'', category:'Muzik', privacy:'public', status:'hidden', src_path:path, duration_s:dur || null, release_id:rel.id, track_id:t.id }).select().single());
+      ST.videos.push(mapVideo(row)); setSave('Disimpan'); refreshTracks(); toast('Video dipautkan. Ia tersedia selepas release diterbitkan.');
+    }
+  } catch (e) { setSave('Gagal'); toast(friendly(e)); }
 }
 function onField(e) {
   const el = e.target;
   if (el.type === 'file') { if (e.type === 'change') onFile(el); return; }
-  if (el.id === 'aName') { $('#chPrev').innerHTML = chPrev(el.value); return; }
-  const rel = UI.editing && curRel(); if (!rel) return;
+  if (el.dataset.apin) { if (e.type === 'input') apSuggest(el.dataset.apin); return; }
+  const rel = UI.editing && curRel(); if (!rel || !editable(rel)) return;
   if (el.dataset.f !== undefined) {
-    const f = el.dataset.f;
-    if (f === 'primary') rel.primary = el.value ? [el.value] : [];
-    else if (f === 'featured') rel.featured = el.value ? [el.value] : [];
-    else rel[f] = el.value;
-    $('#edTitle').textContent = rel.title || 'Release baharu';
+    rel[el.dataset.f] = el.value; $('#edTitle').textContent = rel.title || 'Release baharu';
+    queueSave('r' + rel.id, () => saveRelease(rel));
   } else if (el.dataset.tf) {
     const [tid, f] = el.dataset.tf.split(':'), t = rel.tracks.find(x => x.id === tid); if (!t) return;
     t[f] = f === 'isrc' ? el.value.toUpperCase().replace(/\s/g, '') : el.value;
+    if (f !== 'mvType') queueSave('t' + tid, () => saveTrack(rel, t));
   } else if (el.dataset.terr) {
-    const k = el.dataset.terr;
-    rel.territories = el.checked ? [...new Set([...rel.territories, k])] : rel.territories.filter(x => x !== k);
+    const k = el.dataset.terr; rel.territories = el.checked ? [...new Set([...rel.territories, k])] : rel.territories.filter(x => x !== k);
+    queueSave('r' + rel.id, () => saveRelease(rel));
   } else return;
-  save(); refreshCheck();
+  refreshCheck();
 }
 
-/* Penerbitan: cipta item audio dalam saluran artis dan dedahkan video muzik */
-function publish(rel) {
-  const a = artistById(rel.primary[0]);
-  rel.tracks.forEach(t => {
-    const title = t.title + (t.version ? ` (${t.version})` : '');
-    const au = { id:'v' + uid(), type:'audio_track', title, desc:`Daripada keluaran "${rel.title}"\n℗ ${rel.p}\n© ${rel.c}`, cat:'Muzik', channel:a.name, chKey:'a:' + a.id,
-      src:t.audioUrl, thumb:rel.cover.url, dur:t.dur, views:0, likes:0, dislikes:0, t:Date.now(), privacy:'Awam', trackId:t.id, releaseId:rel.id, comments:[] };
-    S.videos.unshift(au); t.videos.unshift({ id:au.id, relation:'audio_track' });
-    t.videos.forEach(m => {
-      const v = byId(m.id);
-      if (v && m.relation !== 'audio_track') { v.hidden = false; v.title = `${title} (${MV_LABEL[m.relation]})`; v.desc = `${MV_LABEL[m.relation]} untuk "${title}".`; }
-    });
-  });
-  setStatus(rel, 'live');
+/* ================= Tindakan ================= */
+async function act(name) {
+  const rel = curRel(); const run = async (fn, msg) => { try { await fn(); if (msg) toast(msg); await reload(); } catch (e) { toast(friendly(e)); } };
+  if (name === 'submit') return run(() => must(sb.rpc('submit_release', { p_release:rel.id })), 'Release dihantar untuk semakan');
+  if (name === 'approve') return run(() => must(sb.rpc('review_release', { p_release:rel.id, p_approve:true })), 'Release diluluskan');
+  if (name === 'reject') { const why = ($('#rejWhy') || {}).value || ''; if (!why.trim()) return toast('Isi sebab penolakan'); return run(() => must(sb.rpc('review_release', { p_release:rel.id, p_approve:false, p_reason:why })), 'Release ditolak'); }
+  if (name === 'publish') return run(() => must(sb.rpc('publish_release', { p_release:rel.id })), 'Release diterbitkan ke saluran artis');
+  if (name === 'takedown') return run(() => must(sb.rpc('takedown_release', { p_release:rel.id })), 'Release ditarik balik');
+  if (name === 'delrel') { UI.editing = null; return run(() => must(sb.from('releases').delete().eq('id', rel.id)), 'Draf dipadam'); }
 }
-function takedown(rel) { S.videos.forEach(v => { if (v.releaseId === rel.id) v.removed = true; }); setStatus(rel, 'taken_down'); }
+async function newRelease() {
+  if (!approved()) return;
+  const id = uuid();
+  try {
+    await must(sb.from('releases').insert({ id, distributor_id:ST.dist.id, title:'', label_name:ST.dist.name, language:'ms' }));
+    await must(sb.from('tracks').insert({ release_id:id, position:1 }));
+    await reload(false); UI.editing = id; render(); window.scrollTo(0, 0);
+  } catch (e) { toast(friendly(e)); }
+}
 
-function studioAct(s) {
-  const [a, x, y] = s.split(':'), rel = curRel();
-  switch (a) {
-    case 'tab': UI.tab = x; render(); break;
-    case 'newRel':
-      if (!S.artists.length) { toast('Daftar artis dahulu'); UI.tab = 'artists'; render(); return; }
-      { const r = newRelease(); S.releases.unshift(r); save(); UI.editing = r.id; render(); window.scrollTo(0, 0); }
-      break;
-    case 'openRel': UI.editing = x; render(); window.scrollTo(0, 0); break;
-    case 'edBack': UI.editing = null; render(); break;
-    case 'addTrack': rel.tracks.push(newTrack()); save(); refreshTracks(); break;
-    case 'rmTrack': S.videos = S.videos.filter(v => v.trackId !== x); rel.tracks = rel.tracks.filter(t => t.id !== x); save(); refreshTracks(); break;
-    case 'rmMv': { const t = rel.tracks.find(t => t.id === x); S.videos = S.videos.filter(v => v.id !== y); t.videos = t.videos.filter(m => m.id !== y); save(); refreshTracks(); break; }
-    case 'submit':
-      if (validate(rel).errors.length) return toast('Masih ada syarat yang belum dipenuhi');
-      rel.rejection = ''; setStatus(rel, 'submitted'); toast('Release dihantar untuk semakan'); render(); break;
-    case 'approve': setStatus(rel, 'approved'); toast('Release diluluskan'); render(); break;
-    case 'reject': rel.rejection = 'Maklumat atau gambar muka depan tidak mematuhi garis panduan Rocvid (contoh demo).'; setStatus(rel, 'rejected'); toast('Release ditolak. Betulkan dan hantar semula.'); render(); break;
-    case 'publish': publish(rel); toast('Release diterbitkan ke saluran ' + artistById(rel.primary[0]).name); render(); break;
-    case 'takedown': takedown(rel); toast('Release ditarik balik'); render(); break;
-    case 'delRel':
-      S.videos = S.videos.filter(v => v.releaseId !== rel.id); S.releases = S.releases.filter(r => r.id !== rel.id);
-      save(); UI.editing = null; toast('Draf dipadam'); render(); break;
-    case 'addArtist': {
-      const n = $('#aName').value.trim(), err = m => { $('#aErr').textContent = m; };
-      if (!n) return err('Masukkan nama artis.');
-      if (S.artists.some(a => a.name.toLowerCase() === n.toLowerCase())) return err('Nama artis ini sudah didaftarkan.');
-      if (S.videos.some(v => !v.chKey.startsWith('a:') && v.channel.toLowerCase() === n.toLowerCase())) return err('Nama ini digunakan oleh saluran biasa. Pilih nama lain.');
-      const base = slugify(n).slice(0, 40).replace(/-+$/, ''); let slug = base, i = 1;
-      while (S.artists.some(a => a.slug === slug)) { i++; slug = base + '-' + i; }
-      const art = { id:'a' + uid(), name:n, slug, country:$('#aCountry').value, bio:$('#aBio').value.trim(), dist:S.dist.id };
-      S.artists.push(art); S.chSubs['a:' + art.id] = 0; save(); toast(`Saluran artis ${n} dicipta dengan lencana`); render(); break;
-    }
-    case 'makeKey': {
-      const r = new Uint8Array(20); crypto.getRandomValues(r);
-      const key = 'rvm_live_' + [...r].map(b => b.toString(36).padStart(2, '0')).join('').slice(0, 32);
-      S.keys.unshift({ id:uid(), prefix:key.slice(0, 17), t:Date.now() }); UI.newKey = key; save(); render(); break;
-    }
-    case 'revokeKey': S.keys = S.keys.filter(k => k.id !== x); save(); render(); break;
+document.addEventListener('click', async e => {
+  const t = e.target; let el;
+  if ((el = t.closest('[data-tab]'))) { UI.tab = el.dataset.tab; UI.editing = null; UI.editCo = false; $$('.upop').forEach(p => { p.hidden = true; }); render(); return; }
+  if (t.closest('#themeBtn')) { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); return; }
+  if (t.closest('[data-newrel]')) return newRelease();
+  if ((el = t.closest('[data-openrel]'))) { UI.editing = el.dataset.openrel; render(); window.scrollTo(0, 0); return; }
+  if (t.closest('[data-back]')) { UI.editing = null; render(); return; }
+  if ((el = t.closest('[data-coedit]'))) { UI.editCo = el.dataset.coedit === '1'; render(); return; }
+  if ((el = t.closest('[data-act]'))) return act(el.dataset.act);
+  if (t.closest('[data-addtrack]')) {
+    const rel = curRel();
+    try { const row = await must(sb.from('tracks').insert({ release_id:rel.id, position:rel.tracks.length + 1 }).select().single()); rel.tracks.push(mapTrack(row)); refreshTracks(); } catch (x) { toast(friendly(x)); }
+    return;
   }
-}
-
-document.addEventListener('click', e => {
-  let el;
-  if ((el = e.target.closest('[data-sa]'))) { studioAct(el.dataset.sa); return; }
-  if (e.target.closest('#themeBtn')) setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark');
+  if ((el = t.closest('[data-rmtrack]'))) {
+    const rel = curRel(), id = el.dataset.rmtrack;
+    try {
+      await must(sb.from('videos').delete().eq('track_id', id)); await must(sb.from('tracks').delete().eq('id', id));
+      ST.videos = ST.videos.filter(v => v.trackId !== id); rel.tracks = rel.tracks.filter(x => x.id !== id);
+      await Promise.all(rel.tracks.map((x, i) => must(sb.from('tracks').update({ position:i + 1 }).eq('id', x.id)))); refreshTracks();
+    } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-rmmv]'))) {
+    try { await must(sb.from('videos').delete().eq('id', el.dataset.rmmv)); ST.videos = ST.videos.filter(v => v.id !== el.dataset.rmmv); refreshTracks(); } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-aprm]'))) {
+    const [field, id] = el.dataset.aprm.split(':'), rel = curRel();
+    rel[field] = rel[field].filter(x => x !== id);
+    try { await syncArtists(rel); $(`[data-apf="${field}"]`).parentElement.outerHTML = apHTML(rel, field); refreshCheck(); } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-api]'))) return;       // dikendalikan oleh mousedown
+  if (!t.closest('.ap')) apClose();
+  if (t.closest('[data-makekey]')) {
+    try { UI.newKey = await must(sb.rpc('create_api_key', { p_distributor:ST.dist.id, p_name:'Kunci API' })); await reload(); } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-revoke]'))) { try { await must(sb.rpc('revoke_api_key', { p_id:el.dataset.revoke })); await reload(); } catch (x) { toast(friendly(x)); } return; }
+  if ((el = t.closest('[data-dstat]'))) { const [id, st] = el.dataset.dstat.split(':'); try { await must(sb.rpc('set_distributor_status', { p_id:id, p_status:st })); toast('Status dikemas kini'); await reload(); } catch (x) { toast(friendly(x)); } return; }
+  if ((el = t.closest('[data-radm]'))) {
+    const [id, a] = el.dataset.radm.split(':');
+    try {
+      if (a === 'publish') await must(sb.rpc('publish_release', { p_release:id }));
+      else if (a === 'approve') await must(sb.rpc('review_release', { p_release:id, p_approve:true }));
+      else { const why = prompt('Sebab penolakan:'); if (!why) return; await must(sb.rpc('review_release', { p_release:id, p_approve:false, p_reason:why })); }
+      toast('Tindakan berjaya'); await reload();
+    } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-merge]'))) {
+    const a = artistOf(el.dataset.merge);
+    if (!ST.personal.length) return toast('Anda belum mempunyai saluran biasa. Cipta di Rocvid dahulu.');
+    UI.merge = a.id; $('#mgArtist').textContent = a.name; $('#mgErr').textContent = '';
+    $('#mgCh').innerHTML = ST.personal.map(id => `<option value="${id}">${esc(ST.channels[id].name)}</option>`).join(''); $('#mergeDlg').showModal(); return;
+  }
+  if ((el = t.closest('[data-unmerge]'))) {
+    try { await must(sb.rpc('unmerge_artist_channel', { p_artist:el.dataset.unmerge })); toast('Artis dipisahkan dan mendapat saluran artis baharu'); await reload(); } catch (x) { toast(friendly(x)); }
+    return;
+  }
+  if ((el = t.closest('[data-ach]'))) {
+    const a = artistOf(el.dataset.ach), ch = ST.channels[a.channelId]; UI.ach = ch.id;
+    $('#achT').textContent = `Edit saluran ${ch.name}`; $('#achBio').value = ch.bio || a.bio; $('#achAvatar').value = ''; $('#achBanner').value = ''; $('#achErr').textContent = ''; $('#achDlg').showModal();
+  }
 });
 document.addEventListener('keydown', e => {
-  if (e.key !== 'Enter') return;
-  const o = e.target.closest && e.target.closest('[data-sa]');
-  if (o && e.target === o && o.tagName !== 'BUTTON') o.click();
+  const inp = e.target.closest && e.target.closest('[data-apin]');
+  if (inp) {
+    const U_ = UI.ap, n = U_.items.length;
+    if (e.key === 'ArrowDown') { if (!U_.field) apSuggest(inp.dataset.apin); else { U_.idx = n ? (U_.idx + 1) % n : -1; apRender(); } e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { U_.idx = n ? (U_.idx - 1 + n) % n : -1; apRender(); e.preventDefault(); }
+    else if (e.key === 'Enter') { if (U_.field && U_.idx >= 0) apPick(U_.idx); e.preventDefault(); }
+    else if (e.key === 'Escape') apClose();
+    else if (e.key === 'Backspace' && !inp.value) { const rel = curRel(), f = inp.dataset.apin; if (rel[f].length) { rel[f].pop(); syncArtists(rel).then(() => { $(`[data-apf="${f}"]`).parentElement.outerHTML = apHTML(rel, f); refreshCheck(); $(`[data-apin="${f}"]`).focus(); }); } }
+    return;
+  }
+  if (e.key === 'Enter') { const o = e.target.closest && e.target.closest('[data-openrel]'); if (o && e.target === o) { UI.editing = o.dataset.openrel; render(); } }
 });
+document.addEventListener('mousedown', e => { const li = e.target.closest('[data-api]'); if (li) { e.preventDefault(); apPick(+li.dataset.apillegal || +li.dataset.apilIndex || +li.getAttribute('data-apitem') || +li.getAttribute('data-apI') || +li.dataset.api); } });
+document.addEventListener('focusin', e => { const inp = e.target.closest && e.target.closest('[data-apin]'); if (inp && UI.ap.field !== inp.dataset.apin) apSuggest(inp.dataset.apin); });
 document.addEventListener('input', onField);
 document.addEventListener('change', onField);
-window.addEventListener('pagehide', () => Store.flush());
-document.addEventListener('visibilitychange', () => { if (document.hidden) Store.flush(); });
-document.addEventListener('click', e => { if (e.target.closest('a[href]')) Store.flush(); });
 
+/* Borang: syarikat, artis, gabung, edit saluran artis */
+document.addEventListener('submit', async e => {
+  e.preventDefault();
+  const id = e.target.id;
+  if (id === 'coForm') {
+    const err = m => { $('#coErr').textContent = m; }, p = coPayload(), btn = $('#coGo');
+    const need = [['name', 'Nama syarikat'], ['legal_name', 'Nama berdaftar'], ['registration_no', 'No. pendaftaran'], ['address', 'Alamat'], ['contact_person', 'Nama wakil'], ['contact_email', 'Emel perhubungan'], ['phone', 'Telefon']];
+    for (const [k, l] of need) if (!String(p[k]).trim()) return err(`${l} diperlukan.`);
+    if (!/^\S+@\S+\.\S+$/.test(p.contact_email.trim())) return err('Emel perhubungan tidak sah.');
+    if (p.website.trim() && !/^https?:\/\//i.test(p.website.trim())) return err('Laman web mesti bermula dengan http:// atau https://');
+    if (!ST.dist && !$('#coAgree').checked) return err('Anda mesti bersetuju dengan perjanjian pengedar.');
+    btn.disabled = true; err('');
+    try {
+      if (ST.dist) await must(sb.rpc('update_distributor', { p_id:ST.dist.id, p }));
+      else await must(sb.rpc('register_distributor', { p:{ ...p, agree:'true' } }));
+      UI.editCo = false; toast(ST.dist ? 'Maklumat dikemas kini' : 'Pendaftaran dihantar. Menunggu kelulusan.'); await reload();
+    } catch (x) { err(friendly(x)); btn.disabled = false; }
+  } else if (id === 'artForm') {
+    const err = m => { $('#aErr').textContent = m; }, name = $('#aName').value.trim(), btn = $('#aGo');
+    if (!name) return err('Masukkan nama artis.');
+    if (ST.artists.some(a => norm(a.name) === norm(name))) return err('Artis dengan nama ini sudah didaftarkan.');
+    btn.disabled = true; err('');
+    try {
+      const a = await createArtist(name, $('#aCountry').value, $('#aBio').value.trim(), $('#aMerge').value);
+      toast(`${a.name} didaftarkan${$('#aMerge').value ? ' dan digabungkan dengan saluran anda' : ' dengan saluran berlencana'}`); render();
+    } catch (x) { err(friendly(x)); btn.disabled = false; }
+  } else if (id === 'mergeForm') {
+    const btn = $('#mgGo'); btn.disabled = true; $('#mgErr').textContent = '';
+    try { await must(sb.rpc('merge_artist_channel', { p_artist:UI.merge, p_channel:$('#mgCh').value })); $('#mergeDlg').close(); toast('Saluran digabungkan. Muzik dan video akan diterbitkan di saluran ini.'); await reload(); }
+    catch (x) { $('#mgErr').textContent = friendly(x); }
+    btn.disabled = false;
+  } else if (id === 'achForm') {
+    const btn = $('#achGo'), av = $('#achAvatar').files[0], bn = $('#achBanner').files[0]; btn.disabled = true; $('#achErr').textContent = '';
+    try {
+      const patch = { bio:$('#achBio').value.trim() };
+      if (av) { if (!av.type.startsWith('image/')) throw new Error('Gambar profil mesti fail imej'); patch.avatar_path = await uploadFile(av, 'avatars'); }
+      if (bn) { if (!bn.type.startsWith('image/')) throw new Error('Sepanduk mesti fail imej'); patch.banner_path = await uploadFile(bn, 'banners'); }
+      const rows = await must(sb.from('channels').update(patch).eq('id', UI.ach).select());
+      if (!rows.length) throw new Error('Tidak dapat menyimpan saluran');
+      ST.channels[UI.ach] = mapChannel(rows[0]); $('#achDlg').close(); toast('Saluran dikemas kini'); render();
+    } catch (x) { $('#achErr').textContent = friendly(x); }
+    btn.disabled = false;
+  }
+});
+
+/* ================= Mula ================= */
+async function onAuth() { await RV.claim(); await reload(false); RV.mountAuth(menuExtra()); const d = $('#loginDlg'); if (d && d.open) d.close(); render(); }
 (async () => {
-  await Store.init();
-  let st = await Store.load();
-  if (!st || st.v !== 2) st = seed();
-  S = st; Store.save(S);
-  await Store.loadFiles();
-  setTheme(S.me.prefs.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
-  render();
+  initTheme();
+  if (!CONFIGURED || !sb) { render(); return; }
+  await RV.initAuth(onAuth);
+  await RV.claim();
+  await reload(false);
+  RV.mountAuth(menuExtra()); render();
 })();
 </script>
 </body>
