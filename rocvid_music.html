@@ -229,7 +229,6 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px}
   </form>
 </dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="rocvid-core.js"></script>
 <script>
@@ -806,7 +805,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === 'Enter') { const o = e.target.closest && e.target.closest('[data-openrel]'); if (o && e.target === o) { UI.editing = o.dataset.openrel; render(); } }
 });
-document.addEventListener('mousedown', e => { const li = e.target.closest('[data-api]'); if (li) { e.preventDefault(); apPick(+li.dataset.apillegal || +li.dataset.apilIndex || +li.getAttribute('data-apitem') || +li.getAttribute('data-apI') || +li.dataset.api); } });
+document.addEventListener('mousedown', e => { const li = e.target.closest('[data-api]'); if (li) { e.preventDefault(); apPick(+li.dataset.api); } });
 document.addEventListener('focusin', e => { const inp = e.target.closest && e.target.closest('[data-apin]'); if (inp && UI.ap.field !== inp.dataset.apin) apSuggest(inp.dataset.apin); });
 document.addEventListener('input', onField);
 document.addEventListener('change', onField);
@@ -860,6 +859,7 @@ document.addEventListener('submit', async e => {
 async function onAuth() { await RV.claim(); await reload(false); RV.mountAuth(menuExtra()); const d = $('#loginDlg'); if (d && d.open) d.close(); render(); }
 (async () => {
   initTheme();
+  await loadSupabase();
   if (!CONFIGURED || !sb) { render(); return; }
   await RV.initAuth(onAuth);
   await RV.claim();
