@@ -6,9 +6,18 @@
 /* ---------- Konfigurasi dan klien Supabase ---------- */
 const CFG = Object.assign({ supabaseUrl:'', supabaseAnonKey:'', maxUploadMB:50, siteUrl:'index.html', studioUrl:'rocvid_music.html' }, window.ROCVID_CONFIG || {});
 const CONFIGURED = /^https:\/\/\S+$/.test(CFG.supabaseUrl) && !/ISI|YOUR|EXAMPLE|xxxx/i.test(CFG.supabaseUrl + CFG.supabaseAnonKey) && CFG.supabaseAnonKey.length > 20;
-const sb = (CONFIGURED && window.supabase)
-  ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth:{ flowType:'pkce', persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } })
-  : null;
+let sb = null;
+const LIB = { ok:false, tried:[] };
+const LIB_SOURCES = ['https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2', 'https://unpkg.com/@supabase/supabase-js@2',
+  'https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.45.4/supabase.min.js', 'supabase.js'];
+const loadScript = src => new Promise((res, rej) => { const el = document.createElement('script'); el.src = src; el.onload = res; el.onerror = () => rej(new Error(src)); document.head.appendChild(el); });
+/* Muat pustaka supabase-js (cuba beberapa sumber), kemudian cipta klien. Panggil sekali semasa mula. */
+async function loadSupabase() {
+  if (!window.supabase) for (const src of LIB_SOURCES) { LIB.tried.push(src); try { await loadScript(src); if (window.supabase) break; } catch (e) {} }
+  LIB.ok = !!window.supabase;
+  if (CONFIGURED && LIB.ok) sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, { auth:{ flowType:'pkce', persistSession:true, autoRefreshToken:true, detectSessionInUrl:true } });
+  return !!sb;
+}
 
 /* ---------- Helper umum ---------- */
 const $ = s => document.querySelector(s);
@@ -89,6 +98,16 @@ const BADGE = (() => {
     <g fill="none" stroke="#15132B" stroke-linecap="round" stroke-linejoin="round"><path d="M10.4 8.6v6.8M15.6 7.6v6.8" stroke-width="1.5"/><path d="M10.4 8.6l5.2-1" stroke-width="2.2"/></g>
     <g fill="#15132B"><ellipse cx="8.9" cy="15.7" rx="1.9" ry="1.4" transform="rotate(-18 8.9 15.7)"/><ellipse cx="14.1" cy="14.7" rx="1.9" ry="1.4" transform="rotate(-18 14.1 14.7)"/></g></svg>`;
 })();
+/* Tick emas berkilau untuk saluran rasmi Rocvid (cth. CEO). Gradien dan klip ditakrif sekali dalam <defs> global. */
+const GOLD = (() => {
+  let lobes = '';
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; lobes += `<circle cx="${(12 + 7.7 * Math.cos(a)).toFixed(2)}" cy="${(12 + 7.7 * Math.sin(a)).toFixed(2)}" r="3.3"/>`; }
+  return `<svg class="ab gold" viewBox="0 0 24 24" role="img" aria-label="Akaun rasmi Rocvid"><title>Akaun rasmi Rocvid</title>
+    <g fill="url(#goldGrad)">${lobes}<circle cx="12" cy="12" r="8.6"/></g>
+    <g clip-path="url(#goldClip)"><rect class="shine" x="-10" y="-2" width="7" height="28" fill="#fff" opacity=".7"/></g>
+    <path d="M7.4 12.4l3.1 3.1 6.1-6.6" fill="none" stroke="#5B3A00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+})();
+const chBadge = ch => ch && ch.official ? GOLD : (ch && ch.badge ? BADGE : '');
 const GOOGLE = `<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>`;
 
 /* ---------- Pangkalan data ---------- */
@@ -101,7 +120,7 @@ function friendly(e) {
   return m;
 }
 const mapChannel = r => ({ id:r.id, handle:r.handle, name:r.name, bio:r.bio || '', avatar:urlOf(r.avatar_path), banner:urlOf(r.banner_path), avatarPath:r.avatar_path || null, bannerPath:r.banner_path || null,
-  owner:r.owner_id, kind:r.kind, badge:!!r.is_artist, subs:+r.subscriber_count || 0, managedBy:r.managed_by });
+  owner:r.owner_id, kind:r.kind, badge:!!r.is_artist, official:!!r.official, title:r.official_title || '', subs:+r.subscriber_count || 0, managedBy:r.managed_by });
 const mapVideo = r => ({ id:r.id, chId:r.channel_id, uploader:r.uploader_id, type:r.type, title:r.title, desc:r.description || '', cat:r.category || '', privacy:r.privacy, status:r.status,
   src:safeUrl(r.src_url) || urlOf(r.src_path), thumb:safeUrl(r.thumb_url) || urlOf(r.thumb_path), srcPath:r.src_path, thumbPath:r.thumb_path, dur:+r.duration_s || 0,
   views:+r.view_count || 0, likes:+r.like_count || 0, dislikes:+r.dislike_count || 0, t:Date.parse(r.created_at), releaseId:r.release_id, trackId:r.track_id, isrc:r.isrc });
@@ -180,6 +199,10 @@ const RV = {
     const { error } = await sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo:location.origin + location.pathname } });
     if (error) toast(friendly(error));
   },
+  async claim() {                                   // tuntut saluran yang ditempah untuk emel akaun ini (cth. Joshwilent Roy)
+    if (!sb || !this.user) return 0;
+    try { return (await must(sb.rpc('claim_reserved_channels'))) || 0; } catch (e) { return 0; }
+  },
   async signOut() { if (sb) await sb.auth.signOut(); },
   get name() { return (this.profile && this.profile.display_name) || (this.user && this.user.email) || ''; },
 
@@ -211,13 +234,15 @@ const RV = {
   mountAuth(extra) { const el = $('#auth'); if (el) el.innerHTML = this.authHTML(extra); },
 
   setupHTML() {
-    return `<div class="setup"><h1>Sambungkan Supabase dahulu</h1>
-      <p class="muted">${!CONFIGURED ? 'config.js belum diisi.' : 'Pustaka supabase-js gagal dimuatkan (semak sambungan internet).'}</p>
-      <ol><li>Cipta projek di <b>supabase.com</b> dan jalankan <code>rocvid_schema.sql</code> dalam SQL Editor.</li>
-      <li>Salin <b>Project URL</b> dan kunci <b>anon public</b> ke dalam <code>config.js</code>.</li>
-      <li>Aktifkan Google di <b>Authentication &gt; Providers</b> dan tambah URL laman ini di <b>Redirect URLs</b>.</li>
-      <li>Buka laman melalui <code>http://localhost</code> atau domain anda, bukan <code>file://</code>.</li></ol>
-      <p class="muted" style="margin-top:12px">Langkah penuh ada dalam <b>SETUP.md</b>.</p></div>`;
+    const row = (ok, t) => `<li class="${ok ? 'ok' : 'bad'}">${ok ? '✓' : '✗'} ${t}</li>`;
+    const hasCfg = !!window.ROCVID_CONFIG;
+    const title = !hasCfg ? 'config.js tidak dimuatkan' : !CONFIGURED ? 'config.js belum diisi' : 'Pustaka Supabase gagal dimuatkan';
+    const help = !hasCfg ? 'Letakkan config.js dalam folder yang sama dengan halaman ini, kemudian muat semula (Ctrl+Shift+R).'
+      : !CONFIGURED ? 'Isi supabaseUrl dan supabaseAnonKey dalam config.js.'
+      : 'Nilai config.js sudah betul. Yang gagal ialah memuatkan pustaka supabase-js daripada CDN (sambungan internet, penyekat iklan atau pratonton yang menyekat skrip luar). Cuba buka melalui http://localhost atau domain anda, atau muat turun supabase.js dan letak dalam folder yang sama.';
+    return `<div class="setup"><h1>${title}</h1><p class="muted">${help}</p>
+      <ul class="diag">${row(hasCfg, 'config.js dimuatkan')}${row(CONFIGURED, 'URL dan kunci anon diisi')}${row(LIB.ok, 'Pustaka supabase-js dimuatkan')}</ul>
+      ${LIB.tried.length && !LIB.ok ? `<p class="muted" style="margin-top:10px">Sumber dicuba: ${LIB.tried.map(esc).join(', ')}</p>` : ''}</div>`;
   }
 };
 
@@ -235,6 +260,17 @@ document.addEventListener('click', e => {
   if ((el = t.closest('[data-close]'))) { el.closest('dialog').close(); return; }
   if (t.tagName === 'DIALOG') t.close();
 });
+
+/* Definisi SVG global untuk tick emas */
+(() => {
+  const d = document.createElement('div'); d.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+  let lobes = '';
+  for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; lobes += `<circle cx="${(12 + 7.7 * Math.cos(a)).toFixed(2)}" cy="${(12 + 7.7 * Math.sin(a)).toFixed(2)}" r="3.3"/>`; }
+  d.innerHTML = `<svg width="0" height="0" aria-hidden="true"><defs>
+    <linearGradient id="goldGrad" gradientUnits="userSpaceOnUse" x1="3" y1="2" x2="21" y2="22"><stop offset="0" stop-color="#FFF3B0"/><stop offset=".35" stop-color="#FFD23F"/><stop offset=".7" stop-color="#E8A100"/><stop offset="1" stop-color="#B87A00"/></linearGradient>
+    <clipPath id="goldClip">${lobes}<circle cx="12" cy="12" r="8.6"/></clipPath></defs></svg>`;
+  document.body ? document.body.prepend(d) : document.addEventListener('DOMContentLoaded', () => document.body.prepend(d));
+})();
 
 /* CSS komponen kongsi (menu akaun, dialog, panel persediaan, toast) */
 (() => {
@@ -255,7 +291,8 @@ document.addEventListener('click', e => {
 .gbtn svg{width:20px;height:20px}
 .setup{max-width:640px;margin:60px auto;padding:28px;border:1px solid var(--line);border-radius:24px;background:var(--surface)}
 .setup h1{font-size:24px;margin-bottom:8px}
-.setup ol{margin:14px 0 0 20px;display:grid;gap:8px}
+.diag{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:6px;font-weight:650}
+.diag .ok{color:var(--ok)}.diag .bad{color:var(--danger)}
 .setup code{background:var(--surface2);padding:2px 6px;border-radius:6px;font-size:13px}
 dialog{border:1px solid var(--line);border-radius:22px;background:var(--surface);color:var(--ink);padding:0;width:min(520px,calc(100vw - 24px));max-height:calc(100vh - 24px)}
 dialog::backdrop{background:rgba(6,5,20,.66)}
@@ -267,6 +304,11 @@ dialog footer{display:flex;justify-content:flex-end;gap:8px}
 dialog .wide{width:100%;justify-content:center}
 #toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:14px;font-weight:650;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:200;max-width:calc(100vw - 32px)}
 #toast.on{opacity:1;transform:translateX(-50%)}
-@media (prefers-reduced-motion:reduce){#toast{transition:none}}`;
+svg.gold{filter:drop-shadow(0 0 3px rgba(255,200,61,.75))}
+svg.gold .shine{animation:goldshine 2.6s ease-in-out infinite;transform-box:view-box}
+@keyframes goldshine{0%{transform:translateX(0) skewX(-20deg)}55%,100%{transform:translateX(36px) skewX(-20deg)}}
+.otitle{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:3px 12px 3px 8px;border-radius:999px;color:#5B3A00;background:linear-gradient(135deg,#FFF3B0,#FFD23F 45%,#E8A100);box-shadow:0 0 14px rgba(255,200,61,.45)}
+.otitle .ab{width:18px;height:18px;margin:0;filter:none}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}svg.gold .shine{animation:none}}`;
   document.head.appendChild(st);
 })();
