@@ -126,7 +126,7 @@ main{padding:24px 30px 56px;min-width:0}
 .ar .pic{position:relative;width:112px;height:112px;border-radius:50%;background:var(--g);display:grid;place-items:center;font-size:44px;font-weight:800;color:#fff;box-shadow:var(--shadow);margin-bottom:10px;transition:transform .25s}
 .ar .pic img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%}
 .ar:hover .pic{transform:scale(1.04)}
-.ar .ab{position:absolute;right:-2px;bottom:2px;width:34px;height:34px;margin:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));z-index:1}
+.ar svg.ab{position:absolute;right:-2px;bottom:2px;width:34px;height:34px;margin:0;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));z-index:1}
 .ar strong{display:block;font-weight:680;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .promo{display:flex;align-items:center;gap:16px;padding:18px 20px;border-radius:20px;border:1px solid color-mix(in srgb,var(--sun) 50%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--sun) 18%,var(--surface)),var(--surface));margin-top:32px;flex-wrap:wrap}
 .promo .ab{width:44px;height:44px;margin:0}
@@ -376,7 +376,6 @@ main{padding:24px 30px 56px;min-width:0}
   </form>
 </dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="config.js"></script>
 <script src="rocvid-core.js"></script>
 <script>
@@ -562,7 +561,7 @@ function renderRail() {
 }
 function menuExtra() {
   let h = '';
-  if (S.myCh.length) h += '<small>Saluran saya</small>' + S.myCh.map(id => { const c = S.channels[id]; return `<a href="#/channel/${esc(c.handle)}">${ic('film')}<span>${esc(c.name)}</span>${c.badge ? BADGE : ''}</a>`; }).join('');
+  if (S.myCh.length) h += '<small>Saluran saya</small>' + S.myCh.map(id => { const c = S.channels[id]; return `<a href="#/channel/${esc(c.handle)}">${ic('film')}<span>${esc(c.name)}</span>${chBadge(c)}</a>`; }).join('');
   h += `<button data-newch>${ic('plus')}<span>Cipta saluran</span></button><a href="${esc(CFG.studioUrl)}">${ic('disc')}<span>Music Studio</span></a>`;
   return h;
 }
@@ -579,7 +578,7 @@ function setDur(el, id) {
   if (v && !v.dur && isFinite(el.duration)) { v.dur = el.duration; document.querySelectorAll(`[data-dur="${id}"]`).forEach(n => { n.textContent = fmt(v.dur); }); }
 }
 const avatar = (ch, cls = '') => `<a class="av ${cls}" href="#/channel/${esc(ch.handle)}" style="--g:${grad(ch.id)}" aria-label="Saluran ${esc(ch.name)}">${ch.avatar ? `<img src="${esc(ch.avatar)}" alt="">` : esc((ch.name[0] || '?').toUpperCase())}</a>`;
-const chLink = ch => `<a class="chl" href="#/channel/${esc(ch.handle)}">${esc(ch.name)}</a>${ch.badge ? BADGE : ''}`;
+const chLink = ch => `<a class="chl" href="#/channel/${esc(ch.handle)}">${esc(ch.name)}</a>${chBadge(ch)}`;
 
 const card = (v, i = 0) => { const ch = chOf(v); return `<article class="card rise" style="--i:${Math.min(i, 12)}" tabindex="0" role="link" data-open="${v.id}" aria-label="${esc(v.title)}">
   <div class="thumb" style="--g:${grad(v.id)}">${thumbInner(v)}</div>
@@ -593,7 +592,7 @@ const relCard = v => `<div class="rc" tabindex="0" role="link" data-open="${v.id
   <div><h3>${esc(v.title)}</h3><p class="ch">${chLink(chOf(v))}</p><p class="st"><span>${num(v.views)} tontonan</span></p></div></div>`;
 const artistCard = (a, i = 0) => {
   const ch = S.channels[a.channelId]; if (!ch) return '';
-  return `<a class="ar rise" style="--i:${i}" href="#/channel/${esc(ch.handle)}"><div class="pic" style="--g:${grad(ch.id)}">${ch.avatar ? `<img src="${esc(ch.avatar)}" alt="">` : esc(a.name[0].toUpperCase())}${BADGE}</div><strong>${esc(a.name)}</strong><span class="ch">${num(ch.subs)} pelanggan</span></a>`;
+  return `<a class="ar rise" style="--i:${i}" href="#/channel/${esc(ch.handle)}"><div class="pic" style="--g:${grad(ch.id)}">${ch.avatar ? `<img src="${esc(ch.avatar)}" alt="">` : esc(a.name[0].toUpperCase())}${chBadge(ch) || BADGE}</div><strong>${esc(a.name)}</strong><span class="ch">${num(ch.subs)} pelanggan</span></a>`;
 };
 const activeArtists = () => S.artists.filter(a => S.videos.some(v => v.chId === a.channelId && vis(v)));
 
@@ -631,7 +630,7 @@ function heroHTML() {
       <div class="sbg"></div><div class="shade"></div>
       <div class="copy">${v.trackId ? `<span class="tag">${ic('music')}Video muzik</span>` : ''}
         <h1>${esc(v.title)}</h1>
-        <div class="who"><strong>${esc(ch.name)}</strong>${ch.badge ? BADGE : ''}<span>${num(v.views)} tontonan</span></div>
+        <div class="who"><strong>${esc(ch.name)}</strong>${chBadge(ch)}<span>${num(v.views)} tontonan</span></div>
         <span class="btn sun">${ic('play')}<span>Tonton sekarang</span></span></div>
     </div>`; }).join('')}
     <div class="dots">${L.map((v, i) => `<button class="dot" data-slide="${i}" aria-label="Slaid ${i + 1}"><i></i></button>`).join('')}</div></section>`;
@@ -705,8 +704,8 @@ function renderChannel() {
   const subbed = has('subs', ch.id), art = S.artists.find(a => a.channelId === ch.id);
   $('#main').innerHTML = `<section class="chead" style="--g:${grad(ch.id)}"><div class="cbanner">${ch.banner ? `<img src="${esc(ch.banner)}" alt="">` : ''}</div>
     <div class="cinfo">${avatar(ch, 'lg')}
-      <div class="cmain"><h1>${esc(ch.name)}${ch.badge ? BADGE : ''}</h1>
-        <p class="st">${ch.badge ? `<span class="pill">${BADGE}Artis rasmi</span>` : ''}<span>@${esc(ch.handle)}</span><span>${num(ch.subs)} pelanggan</span><span>${vids.length} item</span></p>
+      <div class="cmain"><h1>${esc(ch.name)}${chBadge(ch)}</h1>
+        <p class="st">${ch.official ? `<span class="otitle">${GOLD}${esc(ch.title || 'Akaun rasmi')}</span>` : ''}${ch.badge ? `<span class="pill">${BADGE}Artis rasmi</span>` : ''}<span>@${esc(ch.handle)}</span><span>${num(ch.subs)} pelanggan</span><span>${vids.length} item</span></p>
         ${ch.bio || (art && art.bio) ? `<p>${esc(ch.bio || art.bio)}</p>` : ''}
         ${owner ? `<p class="muted">Dipaut ke akaun ${esc(RV.user.email || '')}</p>` : ''}</div>
       <div class="cact">${owner ? `<button class="btn" data-editch="${ch.id}">${ic('edit')}<span>Edit saluran</span></button><button class="btn sun" data-upload data-chid="${ch.id}">${ic('plus')}<span>Muat naik</span></button>`
@@ -1130,6 +1129,7 @@ $('#themeBtn').addEventListener('click', () => {});
 
 /* ================= Mula ================= */
 async function onAuth() {
+  await RV.claim();
   try { await loadMine(); } catch (e) { toast(friendly(e)); }
   RV.mountAuth(menuExtra());
   if (RV.user && !S.myCh.length) toast('Selamat datang! Cipta saluran untuk mula memuat naik video.');
@@ -1138,9 +1138,11 @@ async function onAuth() {
 }
 (async () => {
   initTheme(); renderRail();
+  await loadSupabase();
   if (!CONFIGURED || !sb) { $('#main').innerHTML = RV.setupHTML(); return; }
   await RV.initAuth(onAuth);
   RV.mountAuth(menuExtra());
+  await RV.claim();
   try { await loadPublic(); await loadMine(); }
   catch (e) {
     $('#main').innerHTML = `<div class="setup"><h1>Pangkalan data belum sedia</h1><p class="muted">${esc(friendly(e))}</p>
