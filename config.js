@@ -5,7 +5,7 @@
    ===================================================================== */
 window.ROCVID_CONFIG = {
   supabaseUrl: 'https://ajepmujsnfzzsgkqmrpy.supabase.co',
-  supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFqZXBtdWpzbmZ6enNna3FtcnB5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIzOTQyMDIsImV4cCI6MjEwNzk3MDIwMn0.MJtIVuuLFTv3JGysgxs9Yg6lu9-vEZVgF0dNcttYewI',
+  supabaseAnonKey: 'sb_publishable_4_Dnudnp2Cvkpfz2mLt4nQ_oVUQ6NNL',
 
   // Had saiz muat naik (MB). Pelan percuma Supabase menghadkan 50 MB setiap fail.
   // Naikkan nilai ini hanya jika anda sudah menaikkan had storan dalam Supabase.
