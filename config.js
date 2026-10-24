@@ -9,7 +9,7 @@ window.ROCVID_CONFIG = {
 
   // Had saiz muat naik (MB). Pelan percuma Supabase menghadkan 50 MB setiap fail.
   // Naikkan nilai ini hanya jika anda sudah menaikkan had storan dalam Supabase.
-  maxUploadMB: 50,
+  maxUploadMB: 60,
 
   // Nama fail halaman (ubah jika anda menukar nama atau laluan)
   siteUrl: 'index.html',
