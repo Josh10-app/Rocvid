@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ms" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rocvid Admin CMS</title>
+<style>
+:root{
+  --bg:#F4F3FA;--surface:#FFFFFF;--surface2:#ECEBF7;--ink:#12102A;--muted:#66647E;--line:#E3E1F0;
+  --accent:#5148FF;--accent-ink:#FFFFFF;--sun:#FFC83D;--danger:#D62F4B;--ok:#16895F;
+  --shadow:0 1px 2px rgba(20,16,60,.06),0 10px 30px rgba(20,16,60,.09);color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0A0918;--surface:#14132B;--surface2:#1D1C3A;--ink:#F3F2FF;--muted:#A5A3C6;--line:#2A2950;
+  --accent:#8B84FF;--accent-ink:#0A0918;--danger:#FF6B84;--ok:#3ECF94;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 12px 36px rgba(0,0,0,.45);color-scheme:dark;
+}
+*{box-sizing:border-box;margin:0}
+body{font:15px/1.45 "Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+a{color:inherit}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ab{width:16px;height:16px;vertical-align:-3px;margin-left:5px;flex:none}
+.muted,.st{color:var(--muted);font-size:13px}
+.st{display:flex;gap:10px;flex-wrap:wrap}
+.top{position:sticky;top:0;z-index:30;height:68px;display:flex;align-items:center;gap:12px;padding:0 24px;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:850;font-size:25px;letter-spacing:-.05em;color:inherit;text-decoration:none}
+.logo svg{width:36px;height:36px}
+.stag{background:var(--danger);color:#fff;font-size:13px;font-weight:800;padding:4px 12px;border-radius:999px}
+.top .sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:650;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.sun{background:var(--sun);color:#15132B;border-color:var(--sun)}
+.btn.sm{padding:4px 11px;font-size:13px}
+.btn.danger{color:var(--danger);border-color:var(--danger)}
+.btn.ok{color:var(--ok);border-color:var(--ok)}
+.btn:disabled{opacity:.5;cursor:wait}
+.iconbtn{width:42px;height:42px;padding:0;justify-content:center}
+main{max-width:1280px;margin:0 auto;padding:26px 24px 64px}
+.ph{font-size:30px;font-weight:850;letter-spacing:-.04em}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:16px 0 20px;overflow-x:auto}
+.tabs button{border:0;background:none;padding:11px 18px;font-weight:680;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.tabs .n{background:var(--danger);color:#fff;border-radius:999px;font-size:11px;padding:1px 7px;margin-left:6px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.stats div{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px 18px;box-shadow:var(--shadow);display:grid}
+.stats b{font-size:30px;font-weight:850;letter-spacing:-.04em}
+.stats .warn b{color:var(--danger)}
+.stats span{color:var(--muted);font-size:13px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.bar input[type=search]{flex:1;min-width:200px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:10px 18px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;cursor:pointer;font-weight:600}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.list{display:grid;gap:10px}
+.row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:12px}
+.row.blocked{border-color:var(--danger);background:color-mix(in srgb,var(--danger) 7%,var(--surface))}
+.th{position:relative;width:72px;height:72px;border-radius:12px;overflow:hidden;background:var(--g);display:grid;place-items:center;color:#fff;font-weight:800;font-size:22px}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.info{min-width:0}
+.info h3{font-size:15.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.info p{overflow-wrap:anywhere}
+.acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.tag{display:inline-flex;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag.bad{color:var(--danger);border-color:currentColor}
+.tag.good{color:var(--ok);border-color:currentColor}
+.tag.info{color:var(--accent);border-color:currentColor}
+.tag.gold{color:#8A5A00;background:linear-gradient(135deg,#FFF3B0,#FFD23F);border-color:#E8A100}
+.detail{grid-column:1/-1;border-top:1px solid var(--line);padding-top:12px;display:grid;gap:8px;font-size:14px}
+.detail dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 18px}
+.detail dt{color:var(--muted)}
+.detail dd{margin:0;overflow-wrap:anywhere}
+.trk{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--bg);border-radius:12px;padding:8px 10px;flex-wrap:wrap}
+.empty{max-width:460px;margin:50px auto;text-align:center}
+.empty h2{font-size:20px;margin-bottom:6px}
+.empty p{color:var(--muted);margin-bottom:16px}
+.card{max-width:640px;margin:50px auto;padding:28px;border-radius:24px;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow)}
+.card h1{font-size:26px;letter-spacing:-.03em;margin-bottom:8px}
+.card pre{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px;overflow:auto;font-size:13px;margin:12px 0}
+.f{display:grid;gap:6px;font-weight:600;font-size:14px}
+.f select,.f textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font-weight:400}
+.pvbox{background:#000;border-radius:14px;overflow:hidden}
+.pvbox video{width:100%;max-height:60vh;display:block}
+.pvbox audio{width:100%;display:block}
+.pvbox img{width:100%;max-height:50vh;object-fit:contain;display:block}
+@media (max-width:760px){.row{grid-template-columns:56px minmax(0,1fr)}.th{width:56px;height:56px}.acts{grid-column:1/-1;justify-content:flex-start}.top{padding:0 12px}.logo span,.top .gbtn span{display:none}main{padding:18px 12px 60px}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="abGrad" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22"><stop offset="0" stop-color="#FFE08A"/><stop offset="1" stop-color="#FF9F43"/></linearGradient>
+</defs></svg>
+
+<header class="top">
+  <a class="logo" href="index.html" aria-label="Rocvid">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="10" fill="var(--accent)"/><path d="M12 8.5l12 7.5-12 7.5z" fill="var(--accent-ink)"/><circle cx="7.2" cy="24.8" r="2.3" fill="var(--sun)"/></svg>
+    <span>rocvid</span>
+  </a>
+  <span class="stag">Admin CMS</span>
+  <span class="sp"></span>
+  <button class="btn iconbtn" id="themeBtn" aria-label="Tukar tema"></button>
+  <div id="auth"></div>
+</header>
+<main id="main"><div class="empty"><p>Memuatkan…</p></div></main>
+
+<dialog id="whyDlg" aria-labelledby="whyT">
+  <form id="whyForm">
+    <header><h2 id="whyT">Sebab</h2><button type="button" class="x" data-close aria-label="Tutup">×</button></header>
+    <label class="f">Sebab biasa<select id="whyPre"><option value="">Pilih…</option><option>Spam atau mengelirukan</option><option>Kandungan dewasa</option><option>Keganasan atau kebencian</option><option>Pelanggaran hak cipta</option><option>Melanggar garis panduan Rocvid</option><option>Maklumat release tidak lengkap atau salah</option></select></label>
+    <label class="f">Butiran (dipaparkan kepada pemilik)<textarea id="whyTxt" rows="3" maxlength="300"></textarea></label>
+    <p id="whyErr" style="color:var(--danger);font-weight:600;min-height:1.2em" role="alert"></p>
+    <footer><button type="button" class="btn" data-close>Batal</button><button type="submit" class="btn danger" id="whyGo">Teruskan</button></footer>
+  </form>
+</dialog>
+<dialog id="pvDlg" aria-labelledby="pvT">
+  <div class="dlg"><header><h2 id="pvT">Pratonton</h2><button type="button" class="x" data-close aria-label="Tutup">×</button></header><div class="pvbox" id="pvBox"></div></div>
+</dialog>
+
+<script src="config.js"></script>
+<script src="rocvid-core.js"></script>
+<script>
+/* ================= Keadaan ================= */
+const LIM = 500;
+const A = { videos:[], ch:{}, pf:{}, comments:[], releases:[], tracks:[], ras:[], artists:[], dists:[], stats:{} };
+const UI = { tab:'overview', q:'', vf:'all', rf:'submitted', open:{} };
+const TYPE = { standard:'Video', audio_track:'Lagu (audio)', official_music_video:'Video muzik', lyric_video:'Video lirik', visualizer:'Visualizer', live_performance:'Persembahan langsung' };
+const RSTAT = { draft:'Draf', submitted:'Menunggu semakan', approved:'Diluluskan', rejected:'Ditolak', live:'Live', taken_down:'Ditarik balik' };
+const DSTAT = { pending:'Menunggu', approved:'Diluluskan', suspended:'Digantung' };
+const isAdmin = () => !!(RV.profile && RV.profile.is_admin);
+const who = id => (A.pf[id] && A.pf[id].display_name) || 'Pengguna';
+const chOf = id => A.ch[id] || { name:'(saluran dipadam)', handle:'' };
+const dName = id => (A.dists.find(d => d.id === id) || {}).name || '?';
+const tag = (t, c = '') => `<span class="tag ${c}">${esc(t)}</span>`;
+const th = (img, seed, label) => `<div class="th" style="--g:${grad(seed)}">${img ? `<img src="${esc(img)}" alt="" loading="lazy">` : esc((label || '?')[0].toUpperCase())}</div>`;
+
+/* ================= Muat data ================= */
+async function count(t, f) {
+  let q = sb.from(t).select('id', { count:'exact', head:true }); if (f) q = f(q);
+  const { count: n, error } = await q; if (error) throw error; return n || 0;
+}
+async function loadAll() {
+  const [vids, chs, pfs, cms, rels, trs, ras, arts, ds] = await Promise.all([
+    must(sb.from('videos').select('*').order('created_at', { ascending:false }).limit(LIM)),
+    must(sb.from('channels').select('*').limit(1000)),
+    must(sb.from('profiles').select('id,display_name,avatar_url,is_admin').limit(2000)),
+    must(sb.from('comments').select('*').order('created_at', { ascending:false }).limit(LIM)),
+    must(sb.from('releases').select('*').order('created_at', { ascending:false }).limit(300)),
+    must(sb.from('tracks').select('*').limit(3000)),
+    must(sb.from('release_artists').select('*').limit(3000)),
+    must(sb.from('artists').select('*').limit(2000)),
+    must(sb.from('distributors').select('*').order('created_at', { ascending:false }))
+  ]);
+  A.videos = vids.map(mapVideo); A.ch = {}; chs.forEach(c => { A.ch[c.id] = mapChannel(c); });
+  A.pf = {}; pfs.forEach(p => { A.pf[p.id] = p; });
+  A.comments = cms.map(c => ({ id:c.id, videoId:c.video_id, userId:c.user_id, body:c.body, t:Date.parse(c.created_at), blocked:!!c.blocked, reason:c.blocked_reason || '' }));
+  A.releases = rels; A.tracks = trs; A.ras = ras; A.artists = arts; A.dists = ds;
+  const [v, au, cm, c, bv, bc, bch, pr, pd] = await Promise.all([
+    count('videos'), count('videos', q => q.eq('type', 'audio_track')), count('comments'), count('channels'),
+    count('videos', q => q.eq('blocked', true)), count('comments', q => q.eq('blocked', true)), count('channels', q => q.eq('blocked', true)),
+    count('releases', q => q.eq('status', 'submitted')), count('distributors', q => q.eq('status', 'pending'))]);
+  A.stats = { videos:v, audio:au, comments:cm, channels:c, bVideos:bv, bComments:bc, bChannels:bch, pendRel:pr, pendDist:pd };
+}
+
+/* ================= Dialog ================= */
+function askReason(title, btn = 'Sekat') {
+  return new Promise(res => {
+    const d = $('#whyDlg'); $('#whyT').textContent = title; $('#whyGo').textContent = btn; $('#whyPre').value = ''; $('#whyTxt').value = ''; $('#whyErr').textContent = '';
+    let done = false; const fin = v => { if (!done) { done = true; res(v); } };
+    d.onclose = () => fin(null);
+    $('#whyForm').onsubmit = e => { e.preventDefault(); const r = [$('#whyPre').value, $('#whyTxt').value.trim()].filter(Boolean).join(': '); if (!r) { $('#whyErr').textContent = 'Pilih atau tulis sebab.'; return; } fin(r); d.close(); };
+    d.showModal();
+  });
+}
+function preview(url, kind, title) {
+  $('#pvT').textContent = title;
+  $('#pvBox').innerHTML = kind === 'audio' ? `<audio controls autoplay src="${esc(url)}"></audio>` : kind === 'image' ? `<img src="${esc(url)}" alt="">` : `<video controls autoplay playsinline src="${esc(url)}"></video>`;
+  const d = $('#pvDlg'); d.onclose = () => { $('#pvBox').innerHTML = ''; }; d.showModal();
+}
+
+/* ================= Paparan ================= */
+function tabsList() {
+  const s = A.stats;
+  return [['overview', 'Ringkasan'], ['videos', 'Video dan muzik'], ['comments', 'Komen'], ['channels', 'Saluran'], ['releases', 'Release', s.pendRel], ['dists', 'Syarikat', s.pendDist]];
+}
+function render() {
+  const m = $('#main');
+  if (!CONFIGURED || !sb) { m.innerHTML = RV.setupHTML(); return; }
+  if (!RV.user) { m.innerHTML = `<div class="card"><h1>Admin CMS Rocvid</h1><p class="muted" style="margin-bottom:16px">Log masuk dengan akaun admin untuk menyemak video, muzik, komen, saluran dan release.</p><button class="btn gbtn sun" data-auth="login">${GOOGLE}<span>Log masuk dengan Google</span></button></div>`; return; }
+  if (!isAdmin()) {
+    m.innerHTML = `<div class="card"><h1>Akses ditolak</h1><p class="muted">Akaun <b>${esc(RV.user.email || '')}</b> bukan admin. Untuk menjadikan akaun ini admin, jalankan sekali dalam Supabase SQL Editor:</p>
+      <pre><code>update profiles set is_admin = true\n where id = (select id from auth.users where email = '${esc(RV.user.email || '')}');</code></pre><p class="muted">Kemudian muat semula halaman ini.</p></div>`;
+    return;
+  }
+  m.innerHTML = `<h1 class="ph">Admin CMS</h1><p class="muted">Semak, sekat dan luluskan kandungan Rocvid.</p>
+    <div class="tabs" role="tablist">${tabsList().map(([id, l, n]) => `<button role="tab" aria-selected="${UI.tab === id}" data-tab="${id}">${l}${n ? `<span class="n">${n}</span>` : ''}</button>`).join('')}</div><div id="body"></div>`;
+  ({ overview:tOverview, videos:tVideos, comments:tComments, channels:tChannels, releases:tReleases, dists:tDists }[UI.tab])();
+}
+function tOverview() {
+  const s = A.stats, st = (n, l, w) => `<div class="${w && n ? 'warn' : ''}"><b>${n}</b><span>${l}</span></div>`;
+  $('#body').innerHTML = `<div class="stats">${st(s.videos, 'Jumlah video dan lagu')}${st(s.audio, 'Lagu (audio)')}${st(s.comments, 'Komen')}${st(s.channels, 'Saluran')}
+    ${st(s.pendRel, 'Release menunggu semakan', 1)}${st(s.pendDist, 'Syarikat menunggu', 1)}${st(s.bVideos, 'Video disekat', 1)}${st(s.bComments, 'Komen disekat', 1)}${st(s.bChannels, 'Saluran disekat', 1)}</div>
+    <p class="muted" style="margin-top:18px">Senarai memaparkan ${LIM} item terkini bagi setiap bahagian. Gunakan carian untuk menapis.</p>`;
+}
+function searchBar(ph, chips) {
+  return `<div class="bar"><input type="search" id="q" placeholder="${ph}" value="${esc(UI.q)}" aria-label="${ph}">${chips || ''}</div><div class="list" id="list"></div>`;
+}
+
+/* ---------- Video dan muzik ---------- */
+const VF = [['all', 'Semua'], ['standard', 'Video'], ['audio', 'Lagu (audio)'], ['mv', 'Video muzik'], ['blocked', 'Disekat'], ['private', 'Peribadi atau belum terbit']];
+function vMatch(v) {
+  const q = UI.q.trim().toLowerCase();
+  if (q && !(v.title + ' ' + chOf(v.chId).name).toLowerCase().includes(q)) return false;
+  return { all:true, standard:v.type === 'standard', audio:v.type === 'audio_track', mv:!['standard', 'audio_track'].includes(v.type), blocked:v.blocked, private:v.privacy !== 'public' || v.status !== 'ready' }[UI.vf];
+}
+function tVideos() {
+  $('#body').innerHTML = searchBar('Cari tajuk atau saluran', VF.map(([k, l]) => `<button class="chip" data-vf="${k}" aria-pressed="${UI.vf === k}">${l}</button>`).join(''));
+  vList();
+}
+function vList() {
+  const L = A.videos.filter(vMatch);
+  $('#list').innerHTML = L.length ? L.map(v => { const ch = chOf(v.chId); return `<article class="row ${v.blocked ? 'blocked' : ''}">
+    ${th(v.thumb, v.id, v.title)}
+    <div class="info"><h3>${esc(v.title)}</h3><p class="st"><span>${esc(ch.name)}${chBadge(ch)}</span>${tag(TYPE[v.type] || v.type)}
+      ${v.blocked ? tag('Disekat', 'bad') : v.status !== 'ready' ? tag(v.status === 'hidden' ? 'Belum terbit' : v.status) : v.privacy !== 'public' ? tag(v.privacy === 'private' ? 'Peribadi' : 'Tidak tersenarai') : tag('Awam', 'good')}
+      <span>${num(v.views)} tontonan</span><span>${ago(v.t)}</span></p>${v.blocked ? `<p class="st" style="color:var(--danger)">Sebab: ${esc(v.blockedReason)}</p>` : ''}</div>
+    <div class="acts"><button class="btn sm" data-pv="${v.id}">Pratonton</button>${v.status === 'ready' && v.privacy === 'public' && !v.blocked ? `<a class="btn sm" href="index.html#/watch/${v.id}">Buka</a>` : ''}
+      ${v.blocked ? `<button class="btn sm ok" data-unblk="video:${v.id}">Buka sekatan</button>` : `<button class="btn sm danger" data-blk="video:${v.id}">Sekat</button>`}
+      <button class="btn sm danger" data-delv="${v.id}">Padam</button></div></article>`; }).join('') : '<div class="empty"><h2>Tiada item</h2><p>Tiada video sepadan dengan tapisan ini.</p></div>';
+}
+
+/* ---------- Komen ---------- */
+function tComments() { $('#body').innerHTML = searchBar('Cari komen, pengguna atau video', `<button class="chip" data-cf="1" aria-pressed="${UI.cf === '1'}">Disekat sahaja</button>`); cList(); }
+function cList() {
+  const q = UI.q.trim().toLowerCase(), vt = id => (A.videos.find(v => v.id === id) || {}).title || '(video tidak dimuatkan)';
+  const L = A.comments.filter(c => (!q || (c.body + ' ' + who(c.userId) + ' ' + vt(c.videoId)).toLowerCase().includes(q)) && (UI.cf !== '1' || c.blocked));
+  $('#list').innerHTML = L.length ? L.map(c => `<article class="row ${c.blocked ? 'blocked' : ''}" style="grid-template-columns:minmax(0,1fr) auto">
+    <div class="info"><p style="white-space:normal">${esc(c.body)}</p><p class="st"><span><b>${esc(who(c.userId))}</b></span><span>pada “${esc(vt(c.videoId))}”</span><span>${ago(c.t)}</span>${c.blocked ? tag('Disekat', 'bad') : ''}</p>${c.blocked ? `<p class="st" style="color:var(--danger)">Sebab: ${esc(c.reason)}</p>` : ''}</div>
+    <div class="acts">${c.blocked ? `<button class="btn sm ok" data-unblk="comment:${c.id}">Buka sekatan</button>` : `<button class="btn sm danger" data-blk="comment:${c.id}">Sekat</button>`}<button class="btn sm danger" data-delc="${c.id}">Padam</button></div></article>`).join('')
+    : '<div class="empty"><h2>Tiada komen</h2></div>';
+}
+
+/* ---------- Saluran ---------- */
+function tChannels() { $('#body').innerHTML = searchBar('Cari nama, nama pengguna atau pemilik'); chList(); }
+function chList() {
+  const q = UI.q.trim().toLowerCase();
+  const L = Object.values(A.ch).filter(c => !q || (c.name + ' ' + c.handle + ' ' + who(c.owner)).toLowerCase().includes(q)).sort((a, b) => b.blocked - a.blocked || b.subs - a.subs);
+  $('#list').innerHTML = L.length ? L.map(c => `<article class="row ${c.blocked ? 'blocked' : ''}">
+    ${th(c.avatar, c.id, c.name)}
+    <div class="info"><h3>${esc(c.name)}${chBadge(c)}</h3><p class="st"><span>@${esc(c.handle)}</span><span>Pemilik: ${esc(c.owner ? who(c.owner) : '(belum dituntut)')}</span><span>${num(c.subs)} pelanggan</span><span>${A.videos.filter(v => v.chId === c.id).length} item</span>
+      ${c.official ? tag(c.title || 'Rasmi', 'gold') : c.badge ? tag('Artis', 'info') : tag(c.kind === 'artist' ? 'Saluran artis' : 'Biasa')}${c.blocked ? tag('Disekat', 'bad') : ''}</p>${c.blocked ? `<p class="st" style="color:var(--danger)">Sebab: ${esc(c.blockedReason)}</p>` : ''}</div>
+    <div class="acts"><a class="btn sm" href="index.html#/channel/${esc(c.handle)}">Buka</a>${c.blocked ? `<button class="btn sm ok" data-unblk="channel:${c.id}">Buka sekatan</button>` : `<button class="btn sm danger" data-blk="channel:${c.id}">Sekat saluran</button>`}</div></article>`).join('')
+    : '<div class="empty"><h2>Tiada saluran</h2></div>';
+}
+
+/* ---------- Release ---------- */
+const RF = [['submitted', 'Menunggu semakan'], ['approved', 'Diluluskan'], ['live', 'Live'], ['all', 'Semua']];
+function tReleases() { $('#body').innerHTML = searchBar('Cari tajuk release atau syarikat', RF.map(([k, l]) => `<button class="chip" data-rf="${k}" aria-pressed="${UI.rf === k}">${l}</button>`).join('')); rList(); }
+function rList() {
+  const q = UI.q.trim().toLowerCase();
+  const names = r => A.ras.filter(x => x.release_id === r.id && x.role === 'primary').map(x => (A.artists.find(a => a.id === x.artist_id) || {}).name).filter(Boolean).join(', ') || 'Tiada artis';
+  const L = A.releases.filter(r => (UI.rf === 'all' || r.status === UI.rf) && (!q || ((r.title || '') + ' ' + dName(r.distributor_id) + ' ' + names(r)).toLowerCase().includes(q)));
+  $('#list').innerHTML = L.length ? L.map(r => {
+    const trs = A.tracks.filter(t => t.release_id === r.id).sort((a, b) => a.position - b.position), open = UI.open[r.id];
+    return `<article class="row ${r.status === 'taken_down' ? 'blocked' : ''}">
+      ${th(urlOf(r.cover_path), r.id, r.title)}
+      <div class="info"><h3>${esc(r.title || 'Tanpa tajuk')}${r.version_title ? ` (${esc(r.version_title)})` : ''}</h3><p class="st"><span>${esc(names(r))}</span><span>${esc(dName(r.distributor_id))}</span><span>${trs.length} lagu</span>${tag(RSTAT[r.status], r.status === 'live' || r.status === 'approved' ? 'good' : r.status === 'submitted' ? 'info' : r.status === 'rejected' ? 'bad' : '')}</p></div>
+      <div class="acts"><button class="btn sm" data-rel="${r.id}">${open ? 'Tutup' : 'Butiran'}</button>
+        ${r.status === 'submitted' ? `<button class="btn sm ok" data-ra="${r.id}:approve">Luluskan</button><button class="btn sm danger" data-ra="${r.id}:reject">Tolak</button>` : ''}
+        ${r.status === 'approved' ? `<button class="btn sm sun" data-ra="${r.id}:publish">Terbitkan</button>` : ''}
+        ${['approved', 'live'].includes(r.status) ? `<button class="btn sm danger" data-ra="${r.id}:takedown">Tarik balik</button>` : ''}</div>
+      ${open ? `<div class="detail"><dl><dt>Label</dt><dd>${esc(r.label_name || '-')}</dd><dt>Genre dan bahasa</dt><dd>${esc(r.genre || '-')} / ${esc(r.language || '-')}</dd><dt>UPC</dt><dd>${esc(r.upc || '-')}</dd>
+        <dt>Tarikh</dt><dd>Asal ${esc(r.original_release_date || '-')}, Rocvid ${esc(r.release_date || '-')}</dd><dt>℗ / ©</dt><dd>${esc(r.p_line || '-')} / ${esc(r.c_line || '-')}</dd><dt>Wilayah</dt><dd>${esc((r.territories || []).join(', '))}</dd>
+        ${r.rejection_reason ? `<dt>Catatan</dt><dd>${esc(r.rejection_reason)}</dd>` : ''}</dl>
+        ${r.cover_path ? `<div><button class="btn sm" data-pvimg="${esc(urlOf(r.cover_path))}">Lihat muka depan (${r.cover_w}x${r.cover_h})</button></div>` : ''}
+        ${trs.map((t, i) => `<div class="trk"><span><b>${i + 1}. ${esc(t.title || 'Tanpa tajuk')}</b> <span class="muted">${esc(t.isrc || 'tiada ISRC')} · ${esc((t.audio_format || '?').toUpperCase())} ${t.sample_rate ? t.sample_rate / 1000 + ' kHz' : ''} ${t.bit_depth ? '/ ' + t.bit_depth + '-bit' : ''} · ${esc(t.composer || t.lyricist || 'tiada pencipta')}</span></span>
+          ${t.audio_path ? `<button class="btn sm" data-pva="${esc(urlOf(t.audio_path))}|${esc(t.title)}">Dengar</button>` : '<span class="muted">tiada audio</span>'}</div>`).join('')}</div>` : ''}</article>`; }).join('')
+    : '<div class="empty"><h2>Tiada release</h2><p>Tiada release sepadan dengan tapisan ini.</p></div>';
+}
+
+/* ---------- Syarikat ---------- */
+function tDists() {
+  $('#body').innerHTML = `<div class="list">${A.dists.map(d => `<article class="row" style="grid-template-columns:minmax(0,1fr) auto"><div class="info"><h3>${esc(d.name)} ${tag(DSTAT[d.status], d.status === 'approved' ? 'good' : d.status === 'suspended' ? 'bad' : 'info')}</h3>
+    <p class="st"><span>${esc(d.legal_name)}</span><span>${esc(d.registration_no)}</span><span>${esc(d.country)}</span><span>${esc(d.contact_person)}</span><span>${esc(d.contact_email)}</span><span>${esc(d.phone)}</span></p>
+    <p class="st"><span>${esc([d.address, d.postcode, d.city].filter(Boolean).join(', '))}</span><span>${ago(Date.parse(d.created_at))}</span></p></div>
+    <div class="acts">${d.status !== 'approved' ? `<button class="btn sm ok" data-ds="${d.id}:approved">Luluskan</button>` : ''}${d.status !== 'suspended' ? `<button class="btn sm danger" data-ds="${d.id}:suspended">Gantung</button>` : ''}</div></article>`).join('') || '<div class="empty"><h2>Belum ada syarikat</h2></div>'}</div>`;
+}
+
+/* ================= Tindakan ================= */
+async function run(fn, msg) { try { await fn(); if (msg) toast(msg); await loadAll(); render(); } catch (e) { toast(friendly(e)); } }
+async function setBlocked(kind, id, block) {
+  let reason = null;
+  if (block) { reason = await askReason(kind === 'video' ? 'Sekat video' : kind === 'comment' ? 'Sekat komen' : 'Sekat saluran'); if (!reason) return; }
+  try {
+    await must(sb.rpc('admin_set_blocked', { p_kind:kind, p_id:id, p_block:block, p_reason:reason }));
+    const it = kind === 'video' ? A.videos.find(x => x.id === id) : kind === 'comment' ? A.comments.find(x => x.id === id) : A.ch[id];
+    if (it) { it.blocked = block; it.blockedReason = it.reason = reason || ''; }
+    toast(block ? 'Disekat' : 'Sekatan dibuka'); loadAll().then(() => { if (UI.tab === 'overview') render(); }).catch(() => {});
+    ({ videos:vList, comments:cList, channels:chList }[UI.tab] || (() => {}))();
+  } catch (e) { toast(friendly(e)); }
+}
+document.addEventListener('click', async e => {
+  const t = e.target; let el;
+  if ((el = t.closest('[data-tab]'))) { UI.tab = el.dataset.tab; UI.q = ''; render(); return; }
+  if (t.closest('#themeBtn')) { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); return; }
+  if ((el = t.closest('[data-vf]'))) { UI.vf = el.dataset.vf; tVideos(); return; }
+  if ((el = t.closest('[data-cf]'))) { UI.cf = UI.cf === '1' ? '' : '1'; tComments(); return; }
+  if ((el = t.closest('[data-rf]'))) { UI.rf = el.dataset.rf; tReleases(); return; }
+  if ((el = t.closest('[data-blk]'))) { const [k, id] = el.dataset.blk.split(':'); return setBlocked(k, id, true); }
+  if ((el = t.closest('[data-unblk]'))) { const [k, id] = el.dataset.unblk.split(':'); return setBlocked(k, id, false); }
+  if ((el = t.closest('[data-pv]'))) { const v = A.videos.find(x => x.id === el.dataset.pv); return preview(v.src, v.type === 'audio_track' ? 'audio' : 'video', v.title); }
+  if ((el = t.closest('[data-pvimg]'))) return preview(el.dataset.pvimg, 'image', 'Muka depan');
+  if ((el = t.closest('[data-pva]'))) { const [u, n] = el.dataset.pva.split('|'); return preview(u, 'audio', n); }
+  if ((el = t.closest('[data-delv]'))) {
+    const v = A.videos.find(x => x.id === el.dataset.delv); if (!confirm(`Padam "${v.title}" secara kekal?`)) return;
+    return run(() => must(sb.from('videos').delete().eq('id', v.id)), 'Video dipadam');
+  }
+  if ((el = t.closest('[data-delc]'))) { if (!confirm('Padam komen ini secara kekal?')) return; return run(() => must(sb.from('comments').delete().eq('id', el.dataset.delc)), 'Komen dipadam'); }
+  if ((el = t.closest('[data-rel]'))) { UI.open[el.dataset.rel] = !UI.open[el.dataset.rel]; rList(); return; }
+  if ((el = t.closest('[data-ds]'))) { const [id, st] = el.dataset.ds.split(':'); return run(() => must(sb.rpc('set_distributor_status', { p_id:id, p_status:st })), 'Status syarikat dikemas kini'); }
+  if ((el = t.closest('[data-ra]'))) {
+    const [id, a] = el.dataset.ra.split(':');
+    if (a === 'approve') return run(() => must(sb.rpc('review_release', { p_release:id, p_approve:true })), 'Release diluluskan');
+    if (a === 'publish') return run(() => must(sb.rpc('publish_release', { p_release:id })), 'Release diterbitkan ke saluran artis');
+    if (a === 'reject') { const why = await askReason('Tolak release', 'Tolak'); if (!why) return; return run(() => must(sb.rpc('review_release', { p_release:id, p_approve:false, p_reason:why })), 'Release ditolak'); }
+    if (a === 'takedown') { const why = await askReason('Tarik balik release', 'Tarik balik'); if (!why) return; return run(() => must(sb.rpc('takedown_release', { p_release:id, p_reason:why })), 'Release ditarik balik'); }
+  }
+});
+document.addEventListener('input', e => {
+  if (e.target.id !== 'q') return;
+  UI.q = e.target.value; ({ videos:vList, comments:cList, channels:chList, releases:rList }[UI.tab] || (() => {}))();
+});
+
+/* ================= Mula ================= */
+async function onAuth() { RV.mountAuth(`<a href="index.html">${ic('home')}<span>Kembali ke Rocvid</span></a>`); await boot(); }
+async function boot() {
+  if (RV.user && isAdmin()) { try { await loadAll(); } catch (e) { $('#main').innerHTML = `<div class="card"><h1>Gagal memuatkan data</h1><p class="muted">${esc(friendly(e))}</p></div>`; return; } }
+  render();
+}
+(async () => {
+  initTheme();
+  await loadSupabase();
+  if (!CONFIGURED || !sb) { render(); return; }
+  await RV.initAuth(onAuth);
+  RV.mountAuth(`<a href="index.html">${ic('home')}<span>Kembali ke Rocvid</span></a>`);
+  await boot();
+})();
+</script>
+</body>
+</html>
