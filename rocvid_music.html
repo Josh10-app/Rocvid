@@ -244,12 +244,12 @@ const MV_LABEL = Object.fromEntries(MV_TYPES.map(([k, l]) => [k, l[0].toUpperCas
 const STATUS_LABEL = { draft:'Draf', submitted:'Dihantar', approved:'Diluluskan', rejected:'Ditolak', live:'Live', taken_down:'Ditarik balik', pending:'Menunggu kelulusan', suspended:'Digantung' };
 
 /* ================= Keadaan ================= */
-const ST = { dist:null, artists:[], releases:[], channels:{}, videos:[], keys:[], personal:[], admin:{ dists:[], releases:[] } };
+const ST = { ext:[], dist:null, artists:[], releases:[], channels:{}, videos:[], keys:[], personal:[], admin:{ dists:[], releases:[] } };
 const UI = { tab:null, editing:null, editCo:false, newKey:null, ap:{ field:null, items:[], idx:-1 }, merge:null, ach:null };
 const curRel = () => ST.releases.find(r => r.id === UI.editing);
 const approved = () => !!ST.dist && ST.dist.status === 'approved';
 const isAdmin = () => !!(RV.profile && RV.profile.is_admin);
-const artistOf = id => ST.artists.find(a => a.id === id);
+const artistOf = id => ST.artists.find(a => a.id === id) || ST.ext.find(a => a.id === id);
 const editable = r => ['draft', 'rejected'].includes(r.status);
 const typeName = t => (RTYPES.find(x => x[0] === t) || [, t])[1];
 const norm = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
@@ -294,7 +294,9 @@ async function loadCatalog() {
   const ids = rels.map(r => r.id); let trs = [], ras = [], vids = [];
   if (ids.length) [trs, ras, vids] = await Promise.all([
     must(sb.from('tracks').select('*').in('release_id', ids)), must(sb.from('release_artists').select('*').in('release_id', ids)), must(sb.from('videos').select('*').in('release_id', ids))]);
-  const chIds = [...new Set(arts.map(a => a.channel_id).filter(Boolean))];
+  const known = new Set(arts.map(a => a.id)), missing = [...new Set(ras.map(x => x.artist_id))].filter(id => !known.has(id));
+  ST.ext = missing.length ? (await must(sb.from('artists').select('*').in('id', missing))).map(mapArtist) : [];
+  const chIds = [...new Set([...arts.map(a => a.channel_id), ...ST.ext.map(a => a.channelId)].filter(Boolean))];
   if (chIds.length) (await must(sb.from('channels').select('*').in('id', chIds))).forEach(c => { ST.channels[c.id] = mapChannel(c); });
   ST.videos = vids.map(mapVideo); ST.releases = rels.map(r => mapRelease(r, trs, ras));
 }
@@ -531,7 +533,7 @@ function validate(rel) {
 }
 
 function apHTML(rel, field) {
-  const ids = rel[field], label = field === 'primary' ? 'Artis utama' : 'Artis jemputan (pilihan)';
+  const ids = rel[field], label = field === 'primary' ? 'Artis utama (boleh lebih daripada satu, cth. rakan usaha sama)' : 'Artis jemputan atau feature (pilihan)';
   return `<div class="f full"><span>${label}</span><div class="ap" data-apf="${field}"><div class="apbox">${ids.map(id => { const a = artistOf(id), ch = a && ST.channels[a.channelId];
     return `<span class="apchip">${esc(a ? a.name : '?')}${ch ? chBadge(ch) || BADGE : ''}<button type="button" data-aprm="${field}:${id}" aria-label="Buang ${esc(a ? a.name : '')}">${ic('x')}</button></span>`; }).join('')}
     <input class="apin" data-apin="${field}" placeholder="${ids.length ? 'Tambah artis…' : 'Taip nama artis…'}" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="aplist-${field}"></div>
@@ -545,7 +547,7 @@ function apRender() {
     if (it.kind === 'new') return `<li class="apitem new" role="option" data-api="${i}" aria-selected="${i === idx}">${ic('plus')}<span>Cipta artis baharu “${esc(it.name)}”</span></li>`;
     const a = it.a, ch = ST.channels[a.channelId], nq = norm(q), p = nq ? norm(a.name).indexOf(nq) : -1;
     const nm = p >= 0 ? `${esc(a.name.slice(0, p))}<mark>${esc(a.name.slice(p, p + q.length))}</mark>${esc(a.name.slice(p + q.length))}` : esc(a.name);
-    return `<li class="apitem" role="option" data-api="${i}" aria-selected="${i === idx}"><span class="av" style="--g:${grad(a.id)}">${avatarOf(ch, a.name)}</span><span>${nm}${ch ? chBadge(ch) || BADGE : ''}</span><small>${ST.releases.filter(r => r.primary.includes(a.id)).length} release</small></li>`;
+    return `<li class="apitem" role="option" data-api="${i}" aria-selected="${i === idx}"><span class="av" style="--g:${grad(a.id)}">${avatarOf(ch, a.name)}</span><span>${nm}${ch ? chBadge(ch) || BADGE : ''}</span><small>${it.ext ? 'pengedar lain' : ST.releases.filter(r => r.primary.includes(a.id)).length + ' release'}</small></li>`;
   }).join('') : `<li class="apempty">${q ? 'Tiada artis sepadan.' : 'Belum ada artis. Daftar di tab Artis.'}</li>`;
   list.hidden = false; input.setAttribute('aria-expanded', 'true');
 }
@@ -557,6 +559,25 @@ function apSuggest(field) {
   const items = L.slice(0, 6).map(a => ({ kind:'artist', a }));
   if (nq && !ST.artists.some(a => norm(a.name) === nq)) items.push({ kind:'new', name:q });
   UI.ap = { field, items, idx:items.length ? 0 : -1 }; apRender();
+  if (nq.length >= 2) apExt(field, q);
+}
+/* Cari juga artis daripada pengedar lain (cth. artis jemputan atau rakan usaha) */
+let apSeq = 0;
+async function apExt(field, q) {
+  const seq = ++apSeq;
+  try {
+    const rows = await must(sb.from('artists').select('*').ilike('name', '%' + q.replace(/[%_,()]/g, '') + '%').limit(8));
+    if (seq !== apSeq || UI.ap.field !== field) return;
+    const rel = curRel(), taken = [...rel.primary, ...rel.featured];
+    const extra = rows.map(mapArtist).filter(a => !taken.includes(a.id) && !ST.artists.some(x => x.id === a.id));
+    if (!extra.length) return;
+    const chIds = extra.map(a => a.channelId).filter(Boolean);
+    if (chIds.length) (await must(sb.from('channels').select('*').in('id', chIds))).forEach(c => { ST.channels[c.id] = mapChannel(c); });
+    extra.forEach(a => { if (!ST.ext.some(x => x.id === a.id)) ST.ext.push(a); });
+    const nw = UI.ap.items.find(i => i.kind === 'new'), local = UI.ap.items.filter(i => i.kind === 'artist');
+    const items = [...local, ...extra.slice(0, 6).map(a => ({ kind:'artist', a, ext:true })), ...(nw ? [nw] : [])];
+    UI.ap = { field, items, idx:items.length ? Math.min(Math.max(UI.ap.idx, 0), items.length - 1) : -1 }; apRender();
+  } catch (e) {}
 }
 function apClose() { $$('.aplist').forEach(l => { l.hidden = true; }); $$('.apin').forEach(i => i.setAttribute('aria-expanded', 'false')); UI.ap.field = null; }
 async function apPick(i) {
