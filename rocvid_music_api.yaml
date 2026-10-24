@@ -1,0 +1,516 @@
+openapi: 3.1.0
+info:
+  title: Rocvid Music Studio API
+  version: 1.0.0
+  description: |
+    API untuk syarikat pengedar muzik menghantar release (audio + video muzik) ke Rocvid.
+
+    **Aliran biasa**
+    1. `POST /v1/artists` untuk daftar artis. Saluran `saluran artis` dicipta automatik.
+    2. `POST /v1/uploads` untuk dapatkan URL muat naik, kemudian PUT fail terus ke storan.
+    3. `POST /v1/releases` (draf), `POST /v1/releases/{id}/tracks` untuk setiap lagu.
+    4. `POST /v1/videos` untuk video muzik, dipautkan ke lagu.
+    5. `GET /v1/releases/{id}/validation` untuk semak syarat, kemudian `POST /v1/releases/{id}/submit`.
+    6. Terima status melalui webhook `release.status_changed`.
+
+    **Pengesahan**: `Authorization: Bearer rvm_live_...` (kunci dicipta dalam Rocvid Music Studio).
+    **Idempotency**: semua `POST` menerima header `Idempotency-Key` supaya percubaan semula selamat.
+servers:
+  - url: https://api.rocvid.example/v1
+security:
+  - apiKey: []
+
+paths:
+  /artists:
+    post:
+      operationId: createArtist
+      summary: Daftar artis dan cipta saluran saluran artis
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ArtistCreate' }
+      responses:
+        '201':
+          description: Artis dicipta bersama salurannya
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Artist' }
+        '422': { $ref: '#/components/responses/Invalid' }
+  /artists/{artistId}:
+    get:
+      operationId: getArtist
+      summary: Dapatkan artis
+      parameters: [{ $ref: '#/components/parameters/ArtistId' }]
+      responses:
+        '200':
+          description: Artis
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Artist' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /uploads:
+    post:
+      operationId: createUpload
+      summary: Minta URL pra-tandatangan untuk muat naik fail
+      description: Muat naik fail dengan `PUT` ke `upload_url`, kemudian gunakan `key` dalam permintaan lain.
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UploadRequest' }
+      responses:
+        '201':
+          description: URL muat naik
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UploadResponse' }
+        '422': { $ref: '#/components/responses/Invalid' }
+
+  /releases:
+    get:
+      operationId: listReleases
+      summary: Senarai release pengedar
+      parameters:
+        - name: status
+          in: query
+          schema: { $ref: '#/components/schemas/ReleaseStatus' }
+        - name: cursor
+          in: query
+          schema: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+      responses:
+        '200':
+          description: Senarai release
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Release' }
+                  next_cursor: { type: [string, 'null'] }
+    post:
+      operationId: createRelease
+      summary: Cipta release (draf)
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReleaseCreate' }
+      responses:
+        '201':
+          description: Release dicipta
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Release' }
+        '403':
+          description: Pengedar belum diluluskan
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '409':
+          description: external_ref atau UPC sudah wujud
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Invalid' }
+
+  /releases/{releaseId}:
+    parameters: [{ $ref: '#/components/parameters/ReleaseId' }]
+    get:
+      operationId: getRelease
+      summary: Dapatkan release beserta lagu dan video yang dipautkan
+      responses:
+        '200':
+          description: Release
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Release' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      operationId: updateRelease
+      summary: Kemas kini release (draf atau ditolak sahaja)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReleaseCreate' }
+      responses:
+        '200':
+          description: Release dikemas kini
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Release' }
+        '409':
+          description: Release tidak boleh diubah dalam statusnya sekarang
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Invalid' }
+
+  /releases/{releaseId}/tracks:
+    parameters: [{ $ref: '#/components/parameters/ReleaseId' }]
+    post:
+      operationId: addTrack
+      summary: Tambah lagu ke release
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/TrackCreate' }
+      responses:
+        '201':
+          description: Lagu ditambah
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Track' }
+        '422': { $ref: '#/components/responses/Invalid' }
+
+  /releases/{releaseId}/validation:
+    parameters: [{ $ref: '#/components/parameters/ReleaseId' }]
+    get:
+      operationId: validateRelease
+      summary: Semak syarat release sebelum submit
+      responses:
+        '200':
+          description: Senarai ralat (kosong bermaksud sedia dihantar)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ready, errors]
+                properties:
+                  ready: { type: boolean }
+                  errors:
+                    type: array
+                    items: { $ref: '#/components/schemas/ValidationError' }
+
+  /releases/{releaseId}/submit:
+    parameters: [{ $ref: '#/components/parameters/ReleaseId' }]
+    post:
+      operationId: submitRelease
+      summary: Hantar release untuk semakan
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      responses:
+        '202':
+          description: Release diterima dan menunggu semakan
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Release' }
+        '422':
+          description: Syarat release belum dipenuhi
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  /releases/{releaseId}/takedown:
+    parameters: [{ $ref: '#/components/parameters/ReleaseId' }]
+    post:
+      operationId: takedownRelease
+      summary: Tarik balik release yang sudah diluluskan atau live
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reason: { type: string, maxLength: 500 }
+      responses:
+        '200':
+          description: Release ditarik balik
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Release' }
+        '409':
+          description: Hanya release approved atau live boleh ditarik balik
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  /videos:
+    post:
+      operationId: createMusicVideo
+      summary: Cipta video muzik dalam saluran saluran artis dan pautkan ke lagu
+      parameters: [{ $ref: '#/components/parameters/IdempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MusicVideoCreate' }
+      responses:
+        '201':
+          description: Video dicipta dan diproses (transcoding)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MusicVideo' }
+        '422': { $ref: '#/components/responses/Invalid' }
+
+webhooks:
+  releaseStatusChanged:
+    post:
+      summary: Status release berubah
+      description: |
+        Ditandatangani dengan header `Rocvid-Signature` (HMAC-SHA256 bagi badan permintaan
+        menggunakan rahsia endpoint). Balas `2xx` dalam 10 saat; percubaan semula berlaku
+        dengan jarak yang meningkat.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, release_id, from_status, to_status, created_at]
+              properties:
+                type: { type: string, const: release.status_changed }
+                release_id: { type: string, format: uuid }
+                from_status: { $ref: '#/components/schemas/ReleaseStatus' }
+                to_status: { $ref: '#/components/schemas/ReleaseStatus' }
+                rejection_reason: { type: [string, 'null'] }
+                created_at: { type: string, format: date-time }
+      responses:
+        '200': { description: Diterima }
+
+components:
+  securitySchemes:
+    apiKey:
+      type: http
+      scheme: bearer
+      description: Kunci API pengedar, bermula dengan `rvm_live_`.
+
+  parameters:
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema: { type: string, maxLength: 100 }
+    ArtistId:
+      name: artistId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ReleaseId:
+      name: releaseId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+
+  responses:
+    NotFound:
+      description: Tidak dijumpai
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Invalid:
+      description: Data tidak sah
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    Problem:
+      type: object
+      required: [title, status]
+      properties:
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        errors:
+          type: array
+          items: { $ref: '#/components/schemas/ValidationError' }
+
+    ValidationError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          examples: [UPC_REQUIRED, COVER_TOO_SMALL, TRACK_ISRC_REQUIRED, TRACK_SONGWRITER_REQUIRED]
+        track_id: { type: [string, 'null'], format: uuid }
+        message: { type: string }
+
+    ArtistCreate:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 80 }
+        country: { type: string, pattern: '^[A-Z]{2}$' }
+        bio: { type: string }
+        image_key: { type: string }
+        isni: { type: string, pattern: '^[0-9]{15}[0-9X]$' }
+
+    Artist:
+      allOf:
+        - $ref: '#/components/schemas/ArtistCreate'
+        - type: object
+          required: [id, slug, channel]
+          properties:
+            id: { type: string, format: uuid }
+            slug: { type: string }
+            channel:
+              type: object
+              description: Saluran artis. Saluran boleh digabungkan dengan saluran biasa di Music Studio.
+              required: [id, handle, name]
+              properties:
+                id: { type: string, format: uuid }
+                handle: { type: string, examples: [siti-nurhaliza] }
+                name: { type: string, examples: ['Siti Nurhaliza'] }
+
+    UploadRequest:
+      type: object
+      required: [kind, filename, content_type, size_bytes]
+      properties:
+        kind: { type: string, enum: [cover, audio, video, thumbnail] }
+        filename: { type: string }
+        content_type: { type: string, examples: [audio/wav, audio/flac, video/mp4, image/jpeg] }
+        size_bytes: { type: integer, minimum: 1 }
+
+    UploadResponse:
+      type: object
+      required: [key, upload_url, expires_at]
+      properties:
+        key: { type: string, description: Gunakan dalam cover_key, audio_key atau source_key }
+        upload_url: { type: string, format: uri }
+        expires_at: { type: string, format: date-time }
+
+    ReleaseStatus:
+      type: string
+      enum: [draft, submitted, in_review, approved, rejected, live, taken_down]
+
+    ReleaseCreate:
+      type: object
+      required: [title, type, primary_artist_ids]
+      properties:
+        external_ref: { type: string, description: ID dalaman pengedar }
+        upc: { type: string, pattern: '^[0-9]{12,13}$' }
+        title: { type: string, maxLength: 200 }
+        version_title: { type: string }
+        type: { type: string, enum: [single, ep, album, compilation] }
+        primary_artist_ids:
+          type: array
+          minItems: 1
+          items: { type: string, format: uuid }
+        featured_artist_ids:
+          type: array
+          items: { type: string, format: uuid }
+        label_name: { type: string }
+        genre: { type: string }
+        subgenre: { type: string }
+        language: { type: string, pattern: '^[a-z]{2,3}$', description: Kod ISO 639 }
+        original_release_date: { type: string, format: date }
+        release_date: { type: string, format: date }
+        p_line: { type: string, examples: ['2026 Nama Label'] }
+        c_line: { type: string, examples: ['2026 Nama Pemilik'] }
+        cover_key: { type: string, description: JPG/PNG segi empat sama, sekurang-kurangnya 3000x3000 }
+        cover_width: { type: integer }
+        cover_height: { type: integer }
+        territories:
+          type: array
+          items: { type: string }
+          default: [WW]
+        explicit: { type: string, enum: [not_explicit, explicit, clean] }
+
+    Release:
+      allOf:
+        - $ref: '#/components/schemas/ReleaseCreate'
+        - type: object
+          required: [id, status]
+          properties:
+            id: { type: string, format: uuid }
+            status: { $ref: '#/components/schemas/ReleaseStatus' }
+            rejection_reason: { type: [string, 'null'] }
+            submitted_at: { type: [string, 'null'], format: date-time }
+            live_at: { type: [string, 'null'], format: date-time }
+            tracks:
+              type: array
+              items: { $ref: '#/components/schemas/Track' }
+
+    Credit:
+      type: object
+      required: [name, role]
+      properties:
+        artist_id: { type: string, format: uuid, description: Wajib untuk primary_artist dan featured_artist }
+        name: { type: string }
+        role:
+          type: string
+          enum: [primary_artist, featured_artist, composer, lyricist, producer,
+                 arranger, mixer, mastering_engineer, remixer, publisher]
+        ipi: { type: string, pattern: '^[0-9]{9,11}$' }
+
+    TrackCreate:
+      type: object
+      required: [track_number, title, isrc, audio_key, credits]
+      properties:
+        disc_number: { type: integer, minimum: 1, default: 1 }
+        track_number: { type: integer, minimum: 1 }
+        title: { type: string, maxLength: 200 }
+        version_title: { type: string }
+        isrc: { type: string, pattern: '^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$' }
+        audio_key: { type: string }
+        audio_format: { type: string, enum: [wav, flac] }
+        sample_rate_hz: { type: integer, minimum: 44100 }
+        bit_depth: { type: integer, enum: [16, 24, 32] }
+        duration_ms: { type: integer, minimum: 1 }
+        language: { type: string, pattern: '^[a-z]{2,3}$' }
+        explicit: { type: string, enum: [not_explicit, explicit, clean] }
+        lyrics: { type: string }
+        lyrics_language: { type: string, pattern: '^[a-z]{2,3}$' }
+        preview_start_ms: { type: integer, minimum: 0 }
+        credits:
+          type: array
+          description: Mesti ada sekurang-kurangnya satu primary_artist dan satu composer atau lyricist.
+          minItems: 2
+          items: { $ref: '#/components/schemas/Credit' }
+
+    Track:
+      allOf:
+        - $ref: '#/components/schemas/TrackCreate'
+        - type: object
+          required: [id]
+          properties:
+            id: { type: string, format: uuid }
+            media:
+              type: array
+              description: Audio dan video yang dipautkan pada lagu ini
+              items:
+                type: object
+                properties:
+                  video_id: { type: string, format: uuid }
+                  relation:
+                    type: string
+                    enum: [audio_track, official_music_video, lyric_video, visualizer, live_performance]
+                  status: { type: string, enum: [uploading, processing, ready, failed, removed] }
+
+    MusicVideoCreate:
+      type: object
+      required: [artist_id, track_id, type, title, source_key]
+      properties:
+        artist_id:
+          type: string
+          format: uuid
+          description: Video diletakkan dalam saluran saluran artis bagi artis ini (mesti artis utama release).
+        track_id: { type: string, format: uuid }
+        type: { type: string, enum: [official_music_video, lyric_video, visualizer, live_performance] }
+        title: { type: string, maxLength: 200 }
+        description: { type: string }
+        source_key: { type: string }
+        thumbnail_key: { type: string }
+        isrc: { type: string, pattern: '^[A-Z]{2}[A-Z0-9]{3}[0-9]{7}$', description: ISRC video (berbeza daripada ISRC audio) }
+        privacy: { type: string, enum: [public, unlisted, private], default: public }
+
+    MusicVideo:
+      allOf:
+        - $ref: '#/components/schemas/MusicVideoCreate'
+        - type: object
+          required: [id, status, channel_handle]
+          properties:
+            id: { type: string, format: uuid }
+            status: { type: string, enum: [uploading, processing, ready, failed, removed] }
+            channel_handle: { type: string, examples: [siti-nurhaliza] }
