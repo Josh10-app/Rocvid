@@ -180,6 +180,9 @@ main{padding:24px 30px 56px;min-width:0}
 .relh h2{font-size:18px}
 .rc{display:grid;grid-template-columns:172px 1fr;gap:12px;margin-bottom:16px;cursor:pointer;border-radius:14px}
 .rc .thumb{border-radius:14px;box-shadow:none}
+.avstack{display:flex}.avstack .av{margin-left:-14px;border:2px solid var(--bg)}.avstack .av:first-child{margin-left:0}
+.and{color:var(--muted);font-weight:500}
+.subs{display:flex;gap:8px;flex-wrap:wrap}
 .sw{display:inline-flex;align-items:center;gap:10px;font-size:13px;font-weight:600;cursor:pointer;justify-content:space-between}
 .sw input{appearance:none;width:36px;height:20px;border-radius:99px;background:var(--line);position:relative;cursor:pointer;transition:background .2s;flex:none}
 .sw input::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s}
@@ -399,7 +402,16 @@ let destroyPlayer = null, heroTimer = null, pvEl = null;
 
 const byId = id => S.videos.find(v => v.id === id);
 const chOf = v => S.channels[v.chId] || { id:v.chId, name:'Saluran', handle:'', badge:false, subs:0, avatar:'' };
-const vis = v => v.privacy === 'public' && v.status === 'ready';
+/* Artis kolaborasi: video/lagu dipaparkan pada saluran semua artis yang dikredit (utama + jemputan) */
+function creditedChannels(v) {
+  const out = [], own = S.channels[v.chId]; if (own) out.push(own);
+  const r = v.releaseId && S.releases.find(x => x.id === v.releaseId);
+  if (r) [...r.primary, ...r.featured].forEach(id => { const a = S.artists.find(x => x.id === id), c = a && S.channels[a.channelId]; if (c && !out.includes(c)) out.push(c); });
+  return out;
+}
+const inChannel = (v, ch) => v.chId === ch.id || creditedChannels(v).some(c => c.id === ch.id);
+const chLinks = v => creditedChannels(v).map(chLink).join(', ');
+const vis = v => v.privacy === 'public' && v.status === 'ready' && !v.blocked;
 const isMine = v => !!RV.user && (v.uploader === RV.user.id || (S.channels[v.chId] || {}).owner === RV.user.id);
 const myChannel = ch => !!RV.user && ch.owner === RV.user.id;
 const has = (k, id) => S.me[k].includes(id);
@@ -408,7 +420,7 @@ const setBusy = (btn, on, label) => { btn.disabled = on; if (label) btn.textCont
 /* ================= Muat data ================= */
 async function loadPublic() {
   const [vids, chans, arts, rels] = await Promise.all([
-    must(sb.from('videos').select('*').eq('status', 'ready').eq('privacy', 'public').order('created_at', { ascending:false }).limit(300)),
+    must(sb.from('videos').select('*').eq('status', 'ready').eq('privacy', 'public').eq('blocked', false).order('created_at', { ascending:false }).limit(300)),
     must(sb.from('channels').select('*')),
     must(sb.from('artists').select('*')),
     must(sb.from('releases').select('*').eq('status', 'live'))
@@ -507,10 +519,10 @@ async function recordHistory(v) {
 }
 async function loadComments(v) {
   try {
-    const rows = await must(sb.from('comments').select('id,user_id,body,created_at').eq('video_id', v.id).order('created_at', { ascending:false }).limit(100));
+    const rows = await must(sb.from('comments').select('id,user_id,body,created_at,blocked').eq('video_id', v.id).order('created_at', { ascending:false }).limit(100));
     const ids = [...new Set(rows.map(r => r.user_id))]; let ppl = [];
     if (ids.length) ppl = await must(sb.from('profiles').select('id,display_name,avatar_url').in('id', ids));
-    S.comments[v.id] = rows.map(r => { const p = ppl.find(x => x.id === r.user_id) || {}; return { id:r.id, who:p.display_name || 'Pengguna', avatar:safeUrl(p.avatar_url), text:r.body, t:Date.parse(r.created_at) }; });
+    S.comments[v.id] = rows.filter(r => !r.blocked).map(r => { const p = ppl.find(x => x.id === r.user_id) || {}; return { id:r.id, who:p.display_name || 'Pengguna', avatar:safeUrl(p.avatar_url), text:r.body, t:Date.parse(r.created_at) }; });
   } catch (e) { S.comments[v.id] = S.comments[v.id] || []; }
   if (UI.current === v.id && UI.view === 'watch') refreshWatch();
 }
@@ -562,7 +574,7 @@ function renderRail() {
 function menuExtra() {
   let h = '';
   if (S.myCh.length) h += '<small>Saluran saya</small>' + S.myCh.map(id => { const c = S.channels[id]; return `<a href="#/channel/${esc(c.handle)}">${ic('film')}<span>${esc(c.name)}</span>${chBadge(c)}</a>`; }).join('');
-  h += `<button data-newch>${ic('plus')}<span>Cipta saluran</span></button><a href="${esc(CFG.studioUrl)}">${ic('disc')}<span>Music Studio</span></a>`;
+  h += (S.myCh.length >= 2 ? `<small>Had 2 saluran telah dicapai</small>` : `<button data-newch>${ic('plus')}<span>Cipta saluran</span></button>`) + `<a href="${esc(CFG.studioUrl)}">${ic('disc')}<span>Music Studio</span></a>`;
   return h;
 }
 
@@ -570,7 +582,7 @@ function menuExtra() {
 function thumbInner(v) {
   const media = v.thumb ? `<img src="${esc(v.thumb)}" alt="">`
     : `<video src="${esc(v.src)}#t=0.6" preload="metadata" muted playsinline onerror="this.remove()" onloadedmetadata="setDur(this,'${v.id}')"></video>`;
-  const b = v.privacy !== 'public' ? PRIV[v.privacy] : '';
+  const b = v.blocked ? 'Disekat' : v.privacy !== 'public' ? PRIV[v.privacy] : '';
   return `${media}<span class="pl">${ic('play')}</span><span class="dur" data-dur="${v.id}">${v.dur ? fmt(v.dur) : ''}</span>${b ? `<span class="badge">${b}</span>` : ''}`;
 }
 function setDur(el, id) {
@@ -582,26 +594,26 @@ const chLink = ch => `<a class="chl" href="#/channel/${esc(ch.handle)}">${esc(ch
 
 const card = (v, i = 0) => { const ch = chOf(v); return `<article class="card rise" style="--i:${Math.min(i, 12)}" tabindex="0" role="link" data-open="${v.id}" aria-label="${esc(v.title)}">
   <div class="thumb" style="--g:${grad(v.id)}">${thumbInner(v)}</div>
-  <div class="meta">${avatar(ch)}<div><h3>${esc(v.title)}</h3><p class="ch">${chLink(ch)}</p>
-  <p class="st"><span>${num(v.views)} tontonan</span><span>${ago(v.t)}</span></p></div></div></article>`; };
+  <div class="meta">${avatar(ch)}<div><h3>${esc(v.title)}</h3><p class="ch">${chLinks(v)}</p>
+  <p class="st"><span>${num(v.views)} tontonan</span><span>${ago(v.t)}</span>${creditedChannels(v).length > 1 ? '<span>Kolaborasi</span>' : ''}</p></div></div></article>`; };
 const sq = (v, i = 0) => `<article class="sq rise" style="--i:${Math.min(i, 12)}" tabindex="0" role="link" data-open="${v.id}" aria-label="${esc(v.title)}">
   <div class="cov" style="--g:${grad(v.id)}">${v.thumb ? `<img src="${esc(v.thumb)}" alt="">` : ''}<span class="pl">${ic('play')}</span></div>
-  <h3>${esc(v.title)}</h3><p class="ch">${chLink(chOf(v))}</p></article>`;
+  <h3>${esc(v.title)}</h3><p class="ch">${chLinks(v)}</p></article>`;
 const relCard = v => `<div class="rc" tabindex="0" role="link" data-open="${v.id}" aria-label="${esc(v.title)}">
   <div class="thumb" style="--g:${grad(v.id)}">${thumbInner(v)}</div>
-  <div><h3>${esc(v.title)}</h3><p class="ch">${chLink(chOf(v))}</p><p class="st"><span>${num(v.views)} tontonan</span></p></div></div>`;
+  <div><h3>${esc(v.title)}</h3><p class="ch">${chLinks(v)}</p><p class="st"><span>${num(v.views)} tontonan</span></p></div></div>`;
 const artistCard = (a, i = 0) => {
   const ch = S.channels[a.channelId]; if (!ch) return '';
   return `<a class="ar rise" style="--i:${i}" href="#/channel/${esc(ch.handle)}"><div class="pic" style="--g:${grad(ch.id)}">${ch.avatar ? `<img src="${esc(ch.avatar)}" alt="">` : esc(a.name[0].toUpperCase())}${chBadge(ch) || BADGE}</div><strong>${esc(a.name)}</strong><span class="ch">${num(ch.subs)} pelanggan</span></a>`;
 };
-const activeArtists = () => S.artists.filter(a => S.videos.some(v => v.chId === a.channelId && vis(v)));
+const activeArtists = () => S.artists.filter(a => { const ch = S.channels[a.channelId]; return ch && S.videos.some(v => vis(v) && inChannel(v, ch)); });
 
 function getList() {
   const pub = S.videos.filter(vis), q = UI.q.trim().toLowerCase();
   let L;
   switch (UI.view) {
     case 'trending': L = [...pub].sort((a, b) => b.views - a.views); break;
-    case 'subs': L = pub.filter(v => has('subs', v.chId)); break;
+    case 'subs': L = pub.filter(v => creditedChannels(v).some(c => has('subs', c.id))); break;
     case 'later': L = S.me.later.map(byId).filter(x => x && x.status !== 'removed'); break;
     case 'liked': L = S.me.liked.map(byId).filter(x => x && x.status !== 'removed'); break;
     case 'history': L = S.me.history.map(byId).filter(x => x && x.status !== 'removed'); break;
@@ -630,7 +642,7 @@ function heroHTML() {
       <div class="sbg"></div><div class="shade"></div>
       <div class="copy">${v.trackId ? `<span class="tag">${ic('music')}Video muzik</span>` : ''}
         <h1>${esc(v.title)}</h1>
-        <div class="who"><strong>${esc(ch.name)}</strong>${chBadge(ch)}<span>${num(v.views)} tontonan</span></div>
+        <div class="who">${creditedChannels(v).map(c => `<strong>${esc(c.name)}</strong>${chBadge(c)}`).join(' dan ')}<span>${num(v.views)} tontonan</span></div>
         <span class="btn sun">${ic('play')}<span>Tonton sekarang</span></span></div>
     </div>`; }).join('')}
     <div class="dots">${L.map((v, i) => `<button class="dot" data-slide="${i}" aria-label="Slaid ${i + 1}"><i></i></button>`).join('')}</div></section>`;
@@ -699,7 +711,7 @@ function renderMusic() {
 function renderChannel() {
   const ch = Object.values(S.channels).find(c => c.handle === UI.chHandle);
   if (!ch) { nav('#/home'); return; }
-  const owner = myChannel(ch), vids = S.videos.filter(v => v.chId === ch.id && (vis(v) || (owner && !['removed', 'hidden'].includes(v.status))));
+  const owner = myChannel(ch), vids = S.videos.filter(v => inChannel(v, ch) && (vis(v) || (owner && v.chId === ch.id && !['removed', 'hidden'].includes(v.status))));
   const songs = vids.filter(v => v.type === 'audio_track'), rest = vids.filter(v => v.type !== 'audio_track').sort((a, b) => b.t - a.t);
   const subbed = has('subs', ch.id), art = S.artists.find(a => a.channelId === ch.id);
   $('#main').innerHTML = `<section class="chead" style="--g:${grad(ch.id)}"><div class="cbanner">${ch.banner ? `<img src="${esc(ch.banner)}" alt="">` : ''}</div>
@@ -707,6 +719,7 @@ function renderChannel() {
       <div class="cmain"><h1>${esc(ch.name)}${chBadge(ch)}</h1>
         <p class="st">${ch.official ? `<span class="otitle">${GOLD}${esc(ch.title || 'Akaun rasmi')}</span>` : ''}${ch.badge ? `<span class="pill">${BADGE}Artis rasmi</span>` : ''}<span>@${esc(ch.handle)}</span><span>${num(ch.subs)} pelanggan</span><span>${vids.length} item</span></p>
         ${ch.bio || (art && art.bio) ? `<p>${esc(ch.bio || art.bio)}</p>` : ''}
+        ${ch.blocked ? '<p class="err">Saluran ini disekat oleh admin dan tidak kelihatan kepada orang lain.</p>' : ''}
         ${owner ? `<p class="muted">Dipaut ke akaun ${esc(RV.user.email || '')}</p>` : ''}</div>
       <div class="cact">${owner ? `<button class="btn" data-editch="${ch.id}">${ic('edit')}<span>Edit saluran</span></button><button class="btn sun" data-upload data-chid="${ch.id}">${ic('plus')}<span>Muat naik</span></button>`
         : `<button class="btn ${subbed ? '' : 'primary'}" data-sub="${ch.id}" aria-pressed="${subbed}">${subbed ? 'Dilanggan' : 'Langgan'}</button>`}</div>
@@ -921,14 +934,14 @@ function mountPlayer(v, ctx) {
 }
 
 function renderWatch() {
-  const v = byId(UI.current), ch = chOf(v);
+  const v = byId(UI.current), ch = chOf(v), cr = creditedChannels(v);
   const rel = S.videos.filter(x => x.id !== v.id && vis(x))
     .sort((a, b) => (b.chId === v.chId) - (a.chId === v.chId) || (b.cat === v.cat) - (a.cat === v.cat) || b.views - a.views).slice(0, 10);
   $('#main').innerHTML = `<div class="watch ${UI.theater ? 'theater' : ''}"><div>
     ${mediaTabs(v)}${playerHTML(v, !!rel[0])}
     <h1>${esc(v.title)}</h1>
     <div class="wrow">
-      <div class="chan">${avatar(ch)}<div><strong>${chLink(ch)}</strong><small id="subCount"></small></div><button class="btn" id="subBtn" data-act="sub"></button></div>
+      <div class="chan">${cr.length > 1 ? `<div class="avstack">${cr.map(c => avatar(c)).join('')}</div>` : avatar(cr[0] || ch)}<div><strong>${(cr.length ? cr : [ch]).map(chLink).join(' <span class="and">dan</span> ')}</strong><small id="subCount"></small></div><div class="subs" id="subBtns"></div></div>
       <div class="acts" id="acts"></div>
     </div>
     <div class="desc"><div class="st"><span>${num(v.views)} tontonan</span><span>${ago(v.t)}</span>${v.cat ? `<span>${esc(v.cat)}</span>` : ''}</div>
@@ -945,13 +958,9 @@ function renderWatch() {
 
 function refreshWatch() {
   const v = byId(UI.current); if (!v || UI.view !== 'watch') return;
-  const ch = chOf(v), subbed = has('subs', v.chId), sb_ = $('#subBtn'), owner = isMine(v);
-  if (myChannel(ch)) { sb_.style.display = 'none'; $('#subCount').textContent = 'Saluran anda'; }
-  else {
-    sb_.style.display = ''; sb_.textContent = subbed ? 'Dilanggan' : 'Langgan';
-    sb_.setAttribute('aria-pressed', subbed); sb_.classList.toggle('primary', !subbed);
-    $('#subCount').textContent = num(ch.subs) + ' pelanggan';
-  }
+  const cr = creditedChannels(v), owner = isMine(v);
+  $('#subCount').textContent = cr.length > 1 ? cr.map(c => `${c.name}: ${num(c.subs)} pelanggan`).join(', ') : num((cr[0] || { subs:0 }).subs) + ' pelanggan';
+  $('#subBtns').innerHTML = cr.filter(c => !myChannel(c)).map(c => { const on = has('subs', c.id); return `<button class="btn ${on ? '' : 'primary'}" data-sub="${c.id}" aria-pressed="${on}">${on ? 'Dilanggan' : 'Langgan'}${cr.length > 1 ? ' ' + esc(c.name) : ''}</button>`; }).join('');
   $('#acts').innerHTML = `
     <div class="seg">
       <button class="btn" data-act="like" aria-pressed="${has('liked', v.id)}" aria-label="Suka">${ic('thumb')}<span>${num(v.likes)}</span></button>
@@ -1007,6 +1016,7 @@ document.addEventListener('mouseout', e => {
 /* ================= Dialog saluran ================= */
 function openChannelDlg(chId) {
   if (!RV.need(chId ? 'mengurus saluran' : 'mencipta saluran')) return;
+  if (!chId && S.myCh.length >= 2) { toast('Had 2 saluran bagi setiap akaun telah dicapai'); return; }
   UI.chEdit = chId || null;
   const ch = chId && S.channels[chId];
   $('#chT').textContent = ch ? 'Edit saluran' : 'Cipta saluran';
